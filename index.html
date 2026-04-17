@@ -1,0 +1,2770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ECA Attend</title>
+<meta name="theme-color" content="#2563eb">
+<link rel="manifest" href='data:application/manifest+json,{"name":"ECA Attend","short_name":"ECA Attend","start_url":".","display":"standalone","background_color":"%23f0f4ff","theme_color":"%232563eb"}'>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<style>
+:root{--bg:#f0f4ff;--w:#fff;--ink:#0d1117;--ink2:#4b5563;--ink3:#9ca3af;--blue:#2563eb;--bl:#eff6ff;--bm:#dbeafe;--green:#16a34a;--gl:#f0fdf4;--red:#dc2626;--rl:#fef2f2;--amber:#d97706;--al:#fffbeb;--purple:#7c3aed;--pl:#f5f3ff;--teal:#0d9488;--tl:#f0fdfa;--bdr:#e5e7eb;--bdr2:#d1d5db;--r:12px;--rs:8px;--rl2:16px;--sh:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);--font:'Plus Jakarta Sans',sans-serif;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);font-family:var(--font);color:var(--ink);min-height:100vh;font-size:15px}
+.app{max-width:520px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:var(--w)}
+.topbar{background:linear-gradient(135deg,#1d4ed8,#2563eb);padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(37,99,235,.3)}
+.tlogo{font-size:18px;width:36px;height:36px;background:rgba(255,255,255,.2);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;border:1px solid rgba(255,255,255,.2)}
+.tlogo img{width:100%;height:100%;object-fit:cover}
+.tname{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.tsub{font-size:10px;color:rgba(255,255,255,.78);font-family:var(--mono)}
+.tcred{font-size:9px;color:rgba(255,255,255,.55);margin-top:1px}
+.tr{margin-left:auto}
+.uchip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 10px 4px 4px;cursor:pointer;border:1px solid rgba(255,255,255,.15)}
+.uchip img{width:22px;height:22px;border-radius:50%}
+.uchip span{font-size:11px;color:#fff;font-weight:500;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.role-badge{display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.rb-admin{background:rgba(124,58,237,.25);color:#e9d5ff;border:1px solid rgba(124,58,237,.4)}
+.rb-teacher{background:rgba(16,163,74,.2);color:#bbf7d0;border:1px solid rgba(16,163,74,.3)}
+.rb-parent{background:rgba(217,119,6,.2);color:#fed7aa;border:1px solid rgba(217,119,6,.3)}
+.bnav{background:var(--w);border-top:1px solid var(--bdr);display:flex;padding:6px 4px 14px;position:sticky;bottom:0;z-index:200;box-shadow:0 -2px 10px rgba(0,0,0,.06)}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:transparent;color:var(--ink3);cursor:pointer;padding:6px 2px;border-radius:10px;font-family:var(--font);transition:all .15s}
+.ni{font-size:20px;line-height:1}
+.nl{font-size:10px;font-weight:600}
+.nb.active{color:var(--blue);background:var(--bl)}
+.page{flex:1;padding:16px;display:none;animation:fadeIn .2s}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--w);border:1px solid var(--bdr);border-radius:var(--rl2);padding:16px;margin-bottom:12px;box-shadow:var(--sh)}
+.card-accent{border-left:3px solid var(--blue)}
+.card-green{border-left:3px solid var(--green)}
+.card-amber{border-left:3px solid var(--amber)}
+.card-red{border-left:3px solid var(--red)}
+.card-purple{border-left:3px solid var(--purple)}
+.ct{font-size:11px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.ct::before{content:'';width:3px;height:13px;background:var(--blue);border-radius:2px;flex-shrink:0}
+.field{margin-bottom:11px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:5px}
+input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--bdr2);border-radius:var(--rs);font-family:var(--font);font-size:14px;color:var(--ink);background:var(--w);outline:none;transition:border .15s;-webkit-appearance:none;appearance:none}
+textarea{font-family:var(--mono);font-size:12px}
+input[type=checkbox]{width:auto;padding:0;border:none;background:transparent;cursor:pointer;accent-color:var(--blue)}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08)}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.ro{padding:10px 12px;border:1.5px solid var(--bdr);border-radius:var(--rs);font-size:13px;color:var(--ink2);background:var(--bg);font-family:var(--mono);min-height:40px;word-break:break-all}
+.btn{width:100%;padding:12px;border-radius:var(--rs);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.bb{background:var(--blue);color:#fff}
+.bg{background:var(--green);color:#fff}
+.br2{background:var(--red);color:#fff}
+.bpu{background:var(--purple);color:#fff}
+.bo{background:var(--w);color:var(--ink);border:1.5px solid var(--bdr2)}
+.bsm{padding:7px 12px;font-size:12px;width:auto}
+.alert{padding:11px 13px;border-radius:var(--rs);font-size:13px;margin-bottom:11px;display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+.ai{flex-shrink:0;font-size:14px;margin-top:1px}
+.a-bl{background:var(--bl);border:1px solid var(--bm);color:#1e40af}
+.a-gr{background:var(--gl);border:1px solid #bbf7d0;color:#15803d}
+.a-rd{background:var(--rl);border:1px solid #fecaca;color:#991b1b}
+.a-am{background:var(--al);border:1px solid #fde68a;color:#92400e}
+.a-pu{background:var(--pl);border:1px solid #ddd6fe;color:#5b21b6}
+.hidden{display:none!important}
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px}
+.b-gr{background:var(--gl);color:var(--green)}
+.b-rd{background:var(--rl);color:var(--red)}
+.b-bl{background:var(--bl);color:var(--blue)}
+.b-am{background:var(--al);color:var(--amber)}
+.b-pu{background:var(--pl);color:var(--purple)}
+.b-tl{background:var(--tl);color:var(--teal)}
+.sh{background:linear-gradient(135deg,#1e3a8a,#2563eb,#3b82f6);color:#fff;border-radius:var(--rl2);padding:18px;margin-bottom:12px;box-shadow:0 4px 16px rgba(37,99,235,.3)}
+.scode{font-family:var(--mono);font-size:42px;font-weight:700;letter-spacing:10px;text-align:center;margin:8px 0}
+.stimer{font-size:12px;opacity:.78;text-align:center;font-family:var(--mono)}
+.stags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.stag{background:rgba(255,255,255,.18);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:500;border:1px solid rgba(255,255,255,.15)}
+.sr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+.sbox{background:var(--w);border:1px solid var(--bdr);border-radius:var(--r);padding:12px;text-align:center;box-shadow:var(--sh)}
+.sv{font-size:26px;font-weight:700;font-family:var(--mono);letter-spacing:-1px}
+.sl{font-size:10px;color:var(--ink3);margin-top:2px;text-transform:uppercase;letter-spacing:.4px;font-weight:600}
+.srow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.srow:last-child{border-bottom:none}
+.sav{width:36px;height:36px;border-radius:50%;background:var(--bm);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--blue);flex-shrink:0}
+.sinf{flex:1;min-width:0}
+.sname{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sroll{font-size:11px;color:var(--ink3);font-family:var(--mono)}
+.pbar{height:6px;background:var(--bdr);border-radius:3px;overflow:hidden;margin-top:6px}
+.pbf{height:100%;border-radius:3px;transition:width .6s}
+.pg{background:linear-gradient(90deg,var(--green),#22c55e)}
+.pa{background:linear-gradient(90deg,var(--amber),#f59e0b)}
+.pr{background:linear-gradient(90deg,var(--red),#f87171)}
+.gring{width:76px;height:76px;border-radius:50%;border:3px solid var(--bdr);display:flex;align-items:center;justify-content:center;margin:14px auto;flex-direction:column;gap:2px;transition:all .3s}
+.gring.ok{border-color:var(--green);background:var(--gl)}
+.gring.fail{border-color:var(--red);background:var(--rl)}
+.gring.spin{border-color:var(--blue);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.tabbar{display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:14px}
+.tab{flex:1;padding:7px 4px;text-align:center;font-size:11px;font-weight:600;border:none;background:transparent;color:var(--ink3);border-radius:7px;cursor:pointer;font-family:var(--font);transition:all .15s}
+.tab.active{background:var(--w);color:var(--blue);box-shadow:var(--sh)}
+.notice{font-size:12px;color:var(--ink2);background:var(--bg);border-radius:var(--rs);padding:10px 12px;border-left:3px solid var(--blue);line-height:1.7;margin-bottom:11px}
+.spin{width:32px;height:32px;border:3px solid var(--bdr);border-top-color:var(--blue);border-radius:50%;animation:sp .7s linear infinite;margin:20px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ph{font-size:13px;color:var(--ink3);text-align:center;padding:14px 0}
+.ldot{display:inline-block;width:7px;height:7px;background:var(--green);border-radius:50%;animation:blink 1.4s infinite;margin-right:4px}
+.rdot{display:inline-block;width:7px;height:7px;background:var(--red);border-radius:50%;animation:blink 1.4s infinite;margin-right:4px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.bcwrap{border:1.5px solid var(--bdr2);border-radius:var(--rs);padding:8px;min-height:44px;cursor:pointer;display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.bcwrap.open{border-color:var(--blue)}
+.bpanel{border:1.5px solid var(--blue);border-radius:var(--rs);padding:12px;margin-top:4px;background:var(--w)}
+.bindv{padding:5px 11px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--bdr2);background:var(--w);color:var(--ink2);user-select:none}
+.bindv.sel{border-color:var(--blue);background:var(--bl);color:var(--blue)}
+.scchip{display:inline-flex;align-items:center;gap:6px;background:var(--gl);border:1px solid #bbf7d0;border-radius:8px;padding:6px 10px;margin:3px;font-family:var(--mono)}
+.scchip.del{background:var(--bg);border-color:var(--bdr);opacity:.5}
+.sccnt{font-size:10px;color:var(--ink3);background:var(--bdr);border-radius:20px;padding:1px 5px}
+.dcard{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bdr)}
+.dcard:last-child{border-bottom:none}
+.ddot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ddot.today{background:var(--green)}
+.ddot.prev{background:var(--bdr2)}
+.perf-table{width:100%;border-collapse:collapse;font-size:12px}
+.perf-table th{background:var(--blue);color:#fff;padding:7px 10px;text-align:left;font-size:11px;font-weight:600}
+.perf-table td{padding:7px 10px;border-bottom:1px solid var(--bdr)}
+.perf-table tr:nth-child(even) td{background:var(--bg)}
+.mode-btn{flex:1;padding:10px;border-radius:var(--rs);text-align:center;cursor:pointer;border:1.5px solid var(--bdr2);background:var(--w);min-width:90px;transition:all .15s}
+.mode-btn.sel{border-width:2px;border-color:var(--blue);background:var(--bl)}
+.mode-btn .mi{font-size:20px;margin-bottom:3px}
+.mode-btn .ml{font-size:12px;font-weight:700;color:var(--ink2)}
+.mode-btn.sel .ml{color:var(--blue)}
+.mode-btn .md{font-size:10px;color:var(--ink3)}
+.admin-only,.superadmin-only{display:none}
+.is-admin .admin-only{display:block}
+.is-superadmin .admin-only,.is-superadmin .superadmin-only{display:block}
+.sec-divider{height:1px;background:linear-gradient(90deg,transparent,var(--bdr),transparent);margin:14px 0}
+.toggle-wrap{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr)}
+.toggle-wrap:last-child{border-bottom:none}
+.toggle-label{font-size:13px;color:var(--ink)}
+.toggle-sub{font-size:11px;color:var(--ink3);margin-top:1px}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--bdr2);border-radius:22px;transition:.2s}
+.toggle-slider::before{content:'';position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle input:checked+.toggle-slider{background:var(--blue)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(18px)}
+.reopen-opt{flex:1;padding:10px;border-radius:var(--rs);text-align:center;cursor:pointer;border:1.5px solid var(--bdr2);background:var(--w);transition:all .15s}
+.reopen-opt.sel{border:2px solid var(--blue);background:var(--bl)}
+.reopen-opt .rt{font-size:13px;font-weight:700;color:var(--ink3)}
+.reopen-opt.sel .rt{color:var(--blue)}
+.reopen-opt .rd2{font-size:10px;color:var(--ink3)}
+.appbanner{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border-radius:var(--rl2);padding:16px;margin-top:10px}
+.appbanner-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.appbanner-desc{font-size:12px;opacity:.9;margin-bottom:12px;line-height:1.5}
+.appbanner-btn{background:#fff;color:#15803d;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;display:inline-block}
+.logo-upload{width:80px;height:80px;border-radius:12px;border:2px dashed var(--bdr2);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;background:var(--bg)}
+.logo-upload img{width:100%;height:100%;object-fit:cover}
+.help-section{background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:8px;border:1px solid var(--bdr)}
+.help-section summary{font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;padding:4px 0;list-style:none}
+.help-section summary::-webkit-details-marker{display:none}
+.help-section[open] summary{border-bottom:1px solid var(--bdr);padding-bottom:8px;margin-bottom:8px}
+.help-section div{font-size:12px;color:var(--ink2);line-height:1.7}
+.help-section code{font-family:var(--mono);font-size:11px;background:var(--w);padding:1px 5px;border-radius:3px;color:var(--blue)}
+.proxy-row{font-size:12px;padding:6px 0;border-bottom:1px solid var(--bdr);color:var(--red)}
+.teacher-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr);font-size:12px;gap:8px}
+.teacher-row-info{flex:1;min-width:0}
+.teacher-row-name{font-weight:600;color:var(--ink);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.teacher-row-meta{font-family:var(--mono);font-size:10px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+</head>
+<body>
+<div class="app" id="app" style="display:none">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tlogo" id="tlogo">📋</div>
+  <div>
+    <div class="tname" id="tname">ECA Attend</div>
+    <div class="tsub" id="tsub">Loading...</div>
+    <div class="tcred" id="tcred"></div>
+  </div>
+  <div class="tr" id="tr"></div>
+</div>
+
+<!-- LOGIN PAGE -->
+<div class="page active" id="page-login">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:78vh;padding:20px;text-align:center">
+    <div id="login-logo" style="width:80px;height:80px;background:linear-gradient(135deg,#1e3a8a,#2563eb);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:38px;margin-bottom:18px;box-shadow:0 8px 24px rgba(37,99,235,.3);overflow:hidden">📋</div>
+    <div id="login-name" style="font-size:24px;font-weight:700;margin-bottom:6px">ECA Attend</div>
+    <div style="font-size:14px;color:var(--ink2);margin-bottom:6px;line-height:1.6">Smart attendance system</div>
+    <div id="login-inst" style="font-size:12px;color:var(--ink3);margin-bottom:28px"></div>
+    <button class="btn bo" style="display:flex;align-items:center;justify-content:center;gap:10px;max-width:300px;padding:13px 20px;font-size:15px" onclick="signIn()">
+      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.5 2.4-7.2 2.4-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2c-.4.4 6.6-4.8 6.6-14.8 0-1.3-.1-2.6-.4-3.9z"/></svg>
+      Continue with Google
+    </button>
+    <div class="alert hidden" id="login-error" style="margin-top:12px;max-width:340px;text-align:left"></div>
+    <div class="alert a-bl" style="margin-top:18px;text-align:left;max-width:340px"><span class="ai">ℹ️</span><span>Students and parents: use the Gmail registered with your teacher. Teachers: use your college email.</span></div>
+    <div id="login-cred" style="font-size:11px;color:var(--ink3);margin-top:24px"></div>
+  </div>
+</div>
+
+<!-- ATTEND PAGE -->
+<div class="page hidden" id="page-attend">
+  <div style="margin-bottom:14px">
+    <div style="font-size:19px;font-weight:700">Mark Attendance</div>
+    <div style="font-size:12px;color:var(--ink2);margin-top:2px">Enter session code from your teacher</div>
+  </div>
+
+  <div id="att-code-sec">
+    <div class="card card-accent">
+      <div class="ct">Session code</div>
+      <div class="field">
+        <input type="text" id="att-code" placeholder="e.g. 472819" maxlength="6" inputmode="numeric"
+          style="font-family:var(--mono);font-size:32px;letter-spacing:12px;text-align:center;padding:14px"
+          oninput="this.value=this.value.replace(/\D/g,'');if(this.value.length===6)findSession(this.value)">
+      </div>
+      <div class="alert hidden" id="att-code-alert"></div>
+      <button class="btn bb" onclick="findSession(G('att-code').value)">Find My Session</button>
+    </div>
+  </div>
+
+  <!-- GPS mode section -->
+  <div id="att-gps-sec" class="hidden">
+    <div class="card" id="att-sess-card"></div>
+    <div class="card">
+      <div class="ct">Location check</div>
+      <div class="gring spin" id="gring"><div style="font-size:26px">📍</div><div style="font-size:9px;font-weight:700;font-family:var(--mono)" id="glbl">Checking</div></div>
+      <div style="font-size:12px;color:var(--ink3);text-align:center;margin-bottom:8px" id="gdet">Getting your location...</div>
+      <div class="alert hidden" id="gps-alert"></div>
+      <button class="btn bo bsm hidden" id="gretry-btn" onclick="runGPS()" style="margin:4px auto;display:block;width:auto">↺ Retry GPS</button>
+    </div>
+  </div>
+
+  <!-- BLE mode section -->
+  <div id="att-ble-sec" class="hidden">
+    <div class="card" id="att-ble-sess-card"></div>
+    <div class="card card-accent">
+      <div class="ct">Bluetooth check</div>
+      <div style="text-align:center;padding:10px 0">
+        <div id="ble-ring" class="gring"><div style="font-size:26px">🔵</div><div style="font-size:9px;font-weight:700;font-family:var(--mono)" id="ble-ring-lbl">Ready</div></div>
+        <div style="font-size:12px;color:var(--ink3)" id="ble-status-msg">Tap below to connect via Bluetooth.</div>
+      </div>
+      <div class="alert hidden" id="ble-alert"></div>
+      <div class="alert a-bl" style="font-size:12px"><span class="ai">ℹ️</span><span>Bluetooth permission needed once — attendance is then marked silently.</span></div>
+      <button class="btn bb" id="ble-scan-btn" onclick="startBLEScan()" style="margin-top:8px">🔵 Start Bluetooth Scan</button>
+      <div id="ble-fallback" class="hidden"></div>
+    </div>
+  </div>
+
+  <!-- Wi-Fi mode section -->
+  <div id="att-wifi-sec" class="hidden">
+    <div class="card" id="att-wifi-sess-card"></div>
+    <div class="card card-green">
+      <div class="ct" style="--blue:var(--green)">Wi-Fi check</div>
+      <div style="text-align:center;padding:10px 0">
+        <div id="wifi-ring" class="gring"><div style="font-size:26px">📶</div><div style="font-size:9px;font-weight:700;font-family:var(--mono)" id="wifi-ring-lbl">Ready</div></div>
+        <div style="font-size:12px;color:var(--ink3)" id="wifi-status-msg">Tap below to verify Wi-Fi beacon.</div>
+      </div>
+      <div class="alert hidden" id="wifi-alert"></div>
+      <div class="alert a-bl" style="font-size:12px"><span class="ai">ℹ️</span><span>Make sure Wi-Fi is ON. Attendance is marked silently.</span></div>
+      <button class="btn bg" id="wifi-scan-btn" onclick="startWiFiScan()" style="margin-top:8px">📶 Start Wi-Fi Scan</button>
+      <div id="wifi-fallback" class="hidden"></div>
+    </div>
+  </div>
+
+  <!-- Unregistered Gmail stop -->
+  <div id="att-unreg-sec" class="hidden">
+    <div class="card card-red">
+      <div class="ct" style="--blue:var(--red)">Email not registered</div>
+      <div class="alert a-rd"><span class="ai">⚠️</span><span>Your Gmail (<b id="unreg-email"></b>) is not in our database. You cannot mark your own attendance.</span></div>
+      <div style="font-size:13px;color:var(--ink2);line-height:1.8;padding:10px 0">
+        <b>What to do:</b><br>
+        1. Ask your teacher to add your Gmail to the student database.<br>
+        2. Meanwhile, a present classmate can mark you via <b>Help a Friend</b> on their phone using the 4-digit secret code from your teacher.
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT section (confirmation → help a friend → statistics) -->
+  <div id="att-result-sec" class="hidden">
+    <div class="card">
+      <div class="alert a-gr" id="att-res-alert"></div>
+    </div>
+    <!-- Help a Friend -->
+    <div class="card card-purple" id="help-sec">
+      <div class="ct" style="--blue:var(--purple)">Help a Friend</div>
+      <div class="notice" style="border-color:var(--purple)">Select a classmate from your session and enter the 4-digit secret code from your teacher.</div>
+      <div class="field">
+        <label>Search by name or roll</label>
+        <input type="text" id="help-search" placeholder="Type name or roll..." oninput="filterHelpList(this.value)">
+      </div>
+      <div class="field">
+        <label>Select friend</label>
+        <select id="help-roll" onchange="onHelpRoll()"><option value="">— Select —</option></select>
+      </div>
+      <div class="field hidden" id="help-name-f"><label>Confirm name</label><div class="ro" id="help-name-d">—</div></div>
+      <div class="field hidden" id="help-code-f">
+        <label>4-digit secret code from teacher</label>
+        <input type="text" id="help-secret" placeholder="e.g. 1234" maxlength="8" inputmode="numeric" style="font-family:var(--mono);font-size:24px;letter-spacing:8px;text-align:center">
+      </div>
+      <div class="alert hidden" id="help-alert"></div>
+      <button class="btn bpu hidden" id="help-btn" onclick="submitHelp()">Submit for Friend</button>
+    </div>
+    <!-- Statistics -->
+    <div class="card">
+      <div class="ct">Your statistics</div>
+      <div id="att-dates"></div>
+      <div id="att-stats" style="margin-top:10px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PORTAL PAGE (student / parent dashboard) -->
+<div class="page hidden" id="page-portal">
+  <div style="margin-bottom:14px">
+    <div style="font-size:19px;font-weight:700" id="portal-title">My Attendance</div>
+    <div style="font-size:12px;color:var(--ink2);margin-top:2px" id="portal-sub">Your personal record</div>
+  </div>
+  <div id="portal-content"><div class="spin"></div></div>
+</div>
+
+<!-- TEACHER CONSOLE PAGE -->
+<div class="page hidden" id="page-teacher">
+  <div style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div style="font-size:19px;font-weight:700">Teacher Console</div>
+      <div style="font-size:11px;color:var(--ink3);font-family:var(--mono);margin-top:2px" id="t-email-lbl"></div>
+    </div>
+    <div id="t-role-badge"></div>
+  </div>
+
+  <div class="tabbar" id="t-tabs">
+    <button class="tab active" id="tab-session" onclick="tTab('session',this)">Session</button>
+    <button class="tab" id="tab-records" onclick="tTab('records',this)">Records</button>
+    <button class="tab" id="tab-students" onclick="tTab('students',this)">Students</button>
+    <button class="tab hidden" id="tab-settings" onclick="tTab('settings',this)">Settings</button>
+  </div>
+
+  <!-- SESSION TAB -->
+  <div id="tt-session">
+    <!-- ACTIVE SESSION -->
+    <div id="t-active" class="hidden">
+      <div id="t-state-live">
+        <div class="sh">
+          <div style="font-size:11px;opacity:.75;font-weight:700;display:flex;align-items:center"><span class="ldot"></span>LIVE SESSION</div>
+          <div class="scode" id="t-code">——</div>
+          <div class="stimer" id="t-timer">—</div>
+          <div class="stags" id="t-tags"></div>
+        </div>
+        <div class="card">
+          <div class="ct">Share with students</div>
+          <div style="font-size:11px;color:var(--ink2);margin-bottom:6px">Session link:</div>
+          <div style="font-size:11px;font-family:var(--mono);background:var(--bg);padding:9px 11px;border-radius:8px;word-break:break-all;color:var(--blue);border:1px solid var(--bm)" id="t-link">—</div>
+          <button class="btn bo bsm" onclick="copyLink()" style="margin-top:8px">📋 Copy Link</button>
+        </div>
+        <div class="sr">
+          <div class="sbox"><div class="sv" id="live-pres" style="color:var(--green)">0</div><div class="sl">Present</div></div>
+          <div class="sbox"><div class="sv" id="live-tot">—</div><div class="sl">Enrolled</div></div>
+          <div class="sbox"><div class="sv" id="live-prx" style="color:var(--amber)">0</div><div class="sl">Via Code</div></div>
+        </div>
+
+        <!-- Mode-specific live panels -->
+        <div id="gps-control" class="card">
+          <div class="ct">GPS radius</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select id="live-r" style="flex:1">
+              <option value="20">20 m</option><option value="50" selected>50 m</option>
+              <option value="100">100 m</option><option value="200">200 m</option><option value="500">500 m</option>
+            </select>
+            <button class="btn bb bsm" onclick="updRadius()">Update</button>
+          </div>
+        </div>
+
+        <div id="ble-live-panel" class="card hidden" style="border:1.5px solid var(--blue)">
+          <div class="ct">Bluetooth beacon — live</div>
+          <div class="alert a-bl" style="font-size:12px"><span class="ai">🔵</span><span>Beacon rotates every 10s. Detected silently by students.</span></div>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+            <div style="flex:1"><div style="font-size:11px;color:var(--ink3)">Active beacon</div><div id="live-beacon-name" style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--blue);letter-spacing:2px">—</div></div>
+            <div style="text-align:right"><div style="font-size:11px;color:var(--ink3)">Rotates in</div><div id="live-beacon-countdown" style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--amber)">—</div></div>
+          </div>
+          <div id="ble-proxy-log" style="font-size:11px;color:var(--ink3);margin-top:10px"></div>
+        </div>
+
+        <div id="wifi-live-panel" class="card hidden" style="border:1.5px solid var(--green)">
+          <div class="ct" style="--blue:var(--green)">Wi-Fi beacon — live</div>
+          <div class="alert a-gr" style="font-size:12px"><span class="ai">📶</span><span>Beacon rotates every 10s. Keep hotspot ON.</span></div>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+            <div style="flex:1"><div style="font-size:11px;color:var(--ink3)">Active code</div><div id="live-wifi-beacon" style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--green);letter-spacing:2px">—</div></div>
+            <div style="text-align:right"><div style="font-size:11px;color:var(--ink3)">Rotates in</div><div id="live-wifi-countdown" style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--amber)">—</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="ct">Secret codes</div>
+          <div class="notice" style="font-size:11px">Give one code verbally per student. Single use.</div>
+          <div id="scodes-wrap" style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px"></div>
+          <button class="btn bo bsm" onclick="moreCodes()">+ Generate 5 more</button>
+        </div>
+
+        <div class="card"><div class="ct">Live attendance</div><div id="live-list"><div class="ph">Waiting for students...</div></div></div>
+
+        <button class="btn br2" onclick="endSession()">⏹ End Session</button>
+      </div>
+
+      <!-- ENDED SESSION -->
+      <div id="t-state-expired" class="hidden">
+        <div style="background:linear-gradient(135deg,#374151,#4b5563);color:#fff;border-radius:var(--rl2);padding:18px;margin-bottom:12px">
+          <div style="font-size:11px;opacity:.7;font-weight:700;margin-bottom:4px"><span class="rdot"></span>SESSION ENDED</div>
+          <div class="scode" id="t-code-exp" style="font-size:32px;letter-spacing:6px">——</div>
+          <div style="font-size:12px;opacity:.7;margin-top:4px" id="t-subj-exp">—</div>
+          <div class="stags" id="t-tags-exp" style="margin-top:8px"></div>
+        </div>
+        <div class="sr">
+          <div class="sbox"><div class="sv" id="exp-pres" style="color:var(--green)">0</div><div class="sl">Present</div></div>
+          <div class="sbox"><div class="sv" id="exp-tot">—</div><div class="sl">Enrolled</div></div>
+          <div class="sbox"><div class="sv" id="exp-prx" style="color:var(--amber)">0</div><div class="sl">Via Code</div></div>
+        </div>
+        <div class="card"><div class="ct">Attended</div><div id="exp-live-list"><div class="ph">—</div></div></div>
+        <button class="btn bg" onclick="showNewSession()" style="margin-bottom:8px">🚀 Start New Session</button>
+        <div class="card card-accent">
+          <div class="ct">Reopen this session</div>
+          <div class="notice">Allow late students in the same session.</div>
+          <div class="field"><label>Extend for</label>
+            <select id="reopen-mins">
+              <option value="1">1 minute</option><option value="2">2 min</option>
+              <option value="5" selected>5 min</option><option value="10">10 min</option>
+              <option value="15">15 min</option><option value="30">30 min</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:6px;margin-bottom:10px">
+            <div class="reopen-opt sel" id="reopen-samecode-btn" onclick="setReopenCodeMode('same')">
+              <div class="rt">🔗 Same code</div><div class="rd2">Students reuse link</div>
+            </div>
+            <div class="reopen-opt" id="reopen-newcode-btn" onclick="setReopenCodeMode('new')">
+              <div class="rt">🔄 New code</div><div class="rd2">More secure</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;margin-bottom:10px">
+            <div class="reopen-opt sel" id="reopen-verify-btn" onclick="setReopenMode('gps')">
+              <div class="rt">🏫 Verify</div><div class="rd2">Normal checks</div>
+            </div>
+            <div class="reopen-opt" id="reopen-code-btn" onclick="setReopenMode('code-only')">
+              <div class="rt">🔑 Code only</div><div class="rd2">No verification</div>
+            </div>
+          </div>
+          <button class="btn bb" onclick="doReopenActive()">🔓 Reopen Session</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEW SESSION FORM -->
+    <div id="t-new">
+
+      <div class="card">
+        <div class="ct">Saved classes</div>
+        <input type="text" id="tmpl-search" placeholder="Filter saved classes..." oninput="renderTmpls()" style="margin-bottom:10px">
+        <div id="tmpl-list"><div class="ph">Start first session — saves automatically</div></div>
+      </div>
+      <div class="card">
+        <div class="ct">New session</div>
+        <div class="field"><label>Subject / Class name</label>
+          <input type="text" id="ns-sub" placeholder="e.g. EME C, DBMS Lab" autocomplete="off" oninput="updateStartBtn()"></div>
+        <div class="field">
+          <label>Batches / Sections <span id="sel-batch-count" style="font-weight:400;color:var(--blue);font-size:11px"></span></label>
+          <div id="b-indiv" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1.5px solid var(--bdr2);border-radius:var(--rs);background:var(--w)">
+            <div class="bindv" id="batch-A" data-batch="A">A</div><div class="bindv" id="batch-B" data-batch="B">B</div><div class="bindv" id="batch-C" data-batch="C">C</div><div class="bindv" id="batch-D" data-batch="D">D</div><div class="bindv" id="batch-E" data-batch="E">E</div><div class="bindv" id="batch-F" data-batch="F">F</div><div class="bindv" id="batch-G" data-batch="G">G</div><div class="bindv" id="batch-A1" data-batch="A1">A1</div><div class="bindv" id="batch-A2" data-batch="A2">A2</div><div class="bindv" id="batch-A3" data-batch="A3">A3</div><div class="bindv" id="batch-A4" data-batch="A4">A4</div><div class="bindv" id="batch-B1" data-batch="B1">B1</div><div class="bindv" id="batch-B2" data-batch="B2">B2</div><div class="bindv" id="batch-B3" data-batch="B3">B3</div><div class="bindv" id="batch-B4" data-batch="B4">B4</div><div class="bindv" id="batch-C1" data-batch="C1">C1</div><div class="bindv" id="batch-C2" data-batch="C2">C2</div><div class="bindv" id="batch-C3" data-batch="C3">C3</div><div class="bindv" id="batch-C4" data-batch="C4">C4</div><div class="bindv" id="batch-D1" data-batch="D1">D1</div><div class="bindv" id="batch-D2" data-batch="D2">D2</div><div class="bindv" id="batch-D3" data-batch="D3">D3</div><div class="bindv" id="batch-D4" data-batch="D4">D4</div><div class="bindv" id="batch-E1" data-batch="E1">E1</div><div class="bindv" id="batch-E2" data-batch="E2">E2</div><div class="bindv" id="batch-E3" data-batch="E3">E3</div><div class="bindv" id="batch-X" data-batch="X">X</div><div class="bindv" id="batch-Y" data-batch="Y">Y</div><div class="bindv" id="batch-Z" data-batch="Z">Z</div>
+          </div><div class="bindv" id="batch-B">B</div><div class="bindv" id="batch-C">C</div><div class="bindv" id="batch-D">D</div><div class="bindv" id="batch-E">E</div><div class="bindv" id="batch-F">F</div><div class="bindv" id="batch-G">G</div><div class="bindv" id="batch-A1">A1</div><div class="bindv" id="batch-A2">A2</div><div class="bindv" id="batch-A3">A3</div><div class="bindv" id="batch-A4">A4</div><div class="bindv" id="batch-B1">B1</div><div class="bindv" id="batch-B2">B2</div><div class="bindv" id="batch-B3">B3</div><div class="bindv" id="batch-B4">B4</div><div class="bindv" id="batch-C1">C1</div><div class="bindv" id="batch-C2">C2</div><div class="bindv" id="batch-C3">C3</div><div class="bindv" id="batch-C4">C4</div><div class="bindv" id="batch-D1">D1</div><div class="bindv" id="batch-D2">D2</div><div class="bindv" id="batch-D3">D3</div><div class="bindv" id="batch-D4">D4</div><div class="bindv" id="batch-E1">E1</div><div class="bindv" id="batch-E2">E2</div><div class="bindv" id="batch-E3">E3</div><div class="bindv" id="batch-X">X</div><div class="bindv" id="batch-Y">Y</div><div class="bindv" id="batch-Z">Z</div>
+          </div>
+          <button class="btn bo bsm" onclick="clearBatches()" style="margin-top:6px;width:auto">✕ Clear selection</button>
+        </div>
+        <div class="field"><label>Branch</label><select id="ns-br"><option value="">— All —</option><option value="CSE">CSE</option><option value="IT">IT</option><option value="EE">EE</option><option value="ECE">ECE</option><option value="EIC">EIC</option><option value="CE">CE</option><option value="ME">ME</option><option value="Cyber">Cyber</option><option value="MBA">MBA</option><option value="MCA">MCA</option></select></div>
+        <div class="field"><label>Semester</label>
+          <select id="ns-sem"><option value="">— All —</option><option value="I">I</option><option value="II">II</option><option value="III">III</option><option value="IV">IV</option><option value="V">V</option><option value="VI">VI</option><option value="VII">VII</option><option value="VIII">VIII</option></select>
+        </div>
+        <div class="field"><label>Periods today</label><select id="ns-per"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+        <div class="field"><label>Attendance window</label><select id="ns-win"><option value="5">5 min</option><option value="10" selected>10 min</option><option value="15">15 min</option><option value="30">30 min</option></select></div>
+        <div class="field">
+          <label>Class mode</label>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">
+            <div class="mode-btn sel" id="mode-offline" onclick="window.setMode('offline')"><div class="mi">🏫</div><div class="ml">Offline</div><div class="md">GPS</div></div>
+            <div class="mode-btn" id="mode-online" onclick="window.setMode('online')"><div class="mi">💻</div><div class="ml">Online</div><div class="md">Email</div></div>
+            <div class="mode-btn" id="mode-bluetooth" onclick="window.setMode('bluetooth')"><div class="mi">🔵</div><div class="ml">Bluetooth</div><div class="md">BLE</div></div>
+            <div class="mode-btn" id="mode-wifi" onclick="window.setMode('wifi')"><div class="mi">📶</div><div class="ml">Wi-Fi</div><div class="md">Hotspot</div></div>
+          </div>
+          <div id="ble-warn" class="alert a-am hidden" style="margin-top:8px;font-size:12px"><span class="ai">⚠️</span><span>Browsers have limited BLE. Native app recommended.</span></div>
+          <div id="wifi-notice" class="alert a-gr hidden" style="margin-top:8px;font-size:12px"><span class="ai">📶</span><span>Turn on phone hotspot when session starts.</span></div>
+        </div>
+        <div id="gps-fields">
+          <div class="field"><label>GPS radius</label><select id="ns-rad"><option value="20">20 m</option><option value="50" selected>50 m</option><option value="100">100 m</option><option value="200">200 m</option></select></div>
+          <div class="field"><label>Classroom location</label><div class="ro" id="ns-loc">Tap below to capture</div></div>
+          <button class="btn bo" onclick="captureLoc()" style="margin-bottom:10px">📍 Get My Location</button>
+        </div>
+        <div class="alert hidden" id="ns-alert"></div>
+        <button class="btn bb" id="ns-start" onclick="startSession()" disabled style="font-size:15px;padding:14px">🚀 Start Session</button>
+      </div>
+      <div class="card">
+        <div class="ct">Past sessions</div>
+        <div id="recent-sessions-list"><div class="ph">None yet</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECORDS TAB -->
+  <div id="tt-records" class="hidden">
+    <div class="card">
+      <div class="ct">Filter</div>
+      <div class="field"><label>Class / Subject</label><select id="rec-class" onchange="loadRecs()"><option value="" id="rec-class-default">All my classes</option></select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div class="field" style="margin-bottom:0"><label>Batch</label><select id="rec-batch" onchange="loadRecs()"><option value="">All</option></select></div>
+        <div class="field" style="margin-bottom:0"><label>Branch</label><select id="rec-branch" onchange="loadRecs()"><option value="">All</option></select></div>
+      </div>
+      <div class="field" style="margin-bottom:0"><label>Semester</label><select id="rec-sem" onchange="loadRecs()"><option value="">All</option><option value="I">I</option><option value="II">II</option><option value="III">III</option><option value="IV">IV</option><option value="V">V</option><option value="VI">VI</option><option value="VII">VII</option><option value="VIII">VIII</option></select></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;gap:8px;align-items:center">
+        <label style="font-size:12px;font-weight:600;white-space:nowrap">Threshold %</label>
+        <input type="number" id="thresh-v" min="0" max="100" placeholder="75" style="width:70px;margin-bottom:0">
+        <button class="btn bo bsm" onclick="expBelow()">Export below</button>
+      </div>
+    </div>
+    <div id="recs-content"><div class="spin"></div></div>
+    <button class="btn bo" onclick="expAll()" style="margin-top:4px">⬇ Export all CSV</button>
+  </div>
+
+  <!-- STUDENTS TAB -->
+  <div id="tt-students" class="hidden">
+    <div class="card">
+      <div class="ct">Student data</div>
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
+        <div id="stu-sync-status" style="flex:1;font-size:12px;color:var(--ink3)">Tap refresh to update</div>
+        <span id="stu-cnt" class="badge b-bl admin-only">0 students</span>
+      </div>
+      <button class="btn bo" onclick="refreshStudents()" id="stu-refresh-btn">↺ Refresh Student Data</button>
+      <div class="alert hidden" id="stu-refresh-alert"></div>
+    </div>
+    <div class="card">
+      <div class="ct">Student portal visibility</div>
+      <div style="font-size:12px;color:var(--ink2);margin-bottom:10px">Each teacher controls this for their own classes from the Session tab.</div>
+      <div class="notice" style="border-color:var(--green)">Go to <b>Session tab → Saved classes</b> and expand any class to control what students see for that specific class.</div>
+    </div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div id="tt-settings" class="hidden">
+    <!-- Institution branding -->
+    <div class="card superadmin-only">
+      <div class="ct">Institution branding</div>
+      <div class="field"><label>Institution name</label><input type="text" id="inst-name" placeholder="Engineering College Ajmer"></div>
+      <div class="field"><label>Short / sub-text</label><input type="text" id="inst-sub" placeholder="Mechanical Engineering Department"></div>
+      <div class="field">
+        <label>Institution logo (optional)</label>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div class="logo-upload" onclick="document.getElementById('logo-file').click()">
+            <img id="logo-preview" src="" style="display:none">
+            <span id="logo-placeholder" style="font-size:10px;color:var(--ink3);text-align:center;padding:4px">Tap to upload</span>
+          </div>
+          <input type="file" id="logo-file" accept="image/*" style="display:none" onchange="handleLogoUpload(event)">
+          <div style="flex:1;font-size:11px;color:var(--ink3);line-height:1.5">Tap to upload. Max 80KB. Appears on login & header.</div>
+        </div>
+      </div>
+      <div class="field"><label>Created by / Developer credit</label><input type="text" id="creator-name" placeholder="Prof. Vinod Kr. Verma · vkvsir.com · ECA"></div>
+      <button class="btn bb" onclick="saveBranding()">Save branding</button>
+      <div class="alert hidden" id="brand-alert"></div>
+    </div>
+
+    <!-- System URLs -->
+    <div class="card superadmin-only">
+      <div class="ct">System URLs</div>
+      <div class="alert a-pu" style="font-size:12px"><span class="ai">🔐</span><span>Only super admin sees these.</span></div>
+      <div class="field"><label style="font-size:11px">Master Apps Script URL</label>
+        <input type="text" id="att-script-url" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:11px;font-family:var(--mono)"></div>
+      <button class="btn bb" onclick="saveAttScriptUrl()" style="margin-bottom:8px">Save & Test</button>
+      <div class="alert hidden" id="att-script-alert"></div>
+      <div class="sec-divider"></div>
+      <div class="field"><label style="font-size:11px">Student Registry CSV URL</label>
+        <input type="text" id="sheet-url-settings" placeholder="https://docs.google.com/.../pub?output=csv" style="font-size:11px;font-family:var(--mono)"></div>
+      <button class="btn bo" onclick="saveUrls()">Save</button>
+      <div class="alert hidden" id="out-alert"></div>
+      <div class="sec-divider"></div>
+      <div class="field"><label style="font-size:11px">Android APK URL</label>
+        <input type="text" id="apk-url" placeholder="https://ecaattend.netlify.app/app.apk" style="font-size:11px;font-family:var(--mono)"></div>
+      <div class="field"><label style="font-size:11px">iOS TestFlight URL</label>
+        <input type="text" id="ios-url" placeholder="https://testflight.apple.com/join/..." style="font-size:11px;font-family:var(--mono)"></div>
+      <div class="field"><label style="font-size:11px">Current app version</label>
+        <input type="text" id="app-version" placeholder="1.0"></div>
+      <button class="btn bo" onclick="saveAppLinks()">Save app links</button>
+    </div>
+
+    <!-- Support contact -->
+    <div class="card admin-only">
+      <div class="ct">Support contact (on teacher sheets)</div>
+      <div style="font-size:12px;color:var(--ink2);margin-bottom:10px">Name and email shown on every teacher sheet.</div>
+      <div class="field"><label><input type="checkbox" id="support-use-super" onchange="toggleSupportMode()"> Use super admin as support contact</label></div>
+      <div id="support-manual-fields">
+        <div class="field"><label>Support name</label><input type="text" id="support-name" placeholder="e.g. Prof. Rajesh Meena"></div>
+        <div class="field"><label>Support email</label><input type="email" id="support-email" placeholder="support@college.ac.in"></div>
+      </div>
+      <button class="btn bb" onclick="saveSupport()">Save & update all sheets</button>
+      <div class="alert hidden" id="support-alert"></div>
+    </div>
+
+    <!-- Admin emails -->
+    <div class="card admin-only">
+      <div class="ct">Admin emails</div>
+      <div class="notice">Co-admins can manage data but cannot see URLs or delete.</div>
+      <div id="admin-email-list" style="margin-bottom:10px"></div>
+      <div style="display:flex;gap:8px"><input type="email" id="new-admin-email" placeholder="admin@college.ac.in" style="flex:1;margin-bottom:0">
+        <button class="btn bpu bsm" onclick="addAdmin()">Add</button></div>
+    </div>
+
+    <!-- Teachers batch paste -->
+    <div class="card admin-only">
+      <div class="ct">Teacher accounts <span class="badge b-bl" id="teacher-count-badge">0</span></div>
+      <div class="notice">Format per line: <code>Full Name | Email | Branch | Abbr</code><br>Example: <code>Vinod Kr. Verma | vinod@eca.ac.in | CSE | CS-VV</code></div>
+      <textarea id="teachers-bulk" rows="4" placeholder="Paste one teacher per line..."></textarea>
+      <button class="btn bb" onclick="addTeachersBulk()" style="margin-top:6px">Add teachers (bulk)</button>
+      <div class="alert hidden" id="teacher-add-alert"></div>
+      <div class="sec-divider"></div>
+      <div style="font-size:11px;font-weight:700;color:var(--ink3);margin-bottom:8px">REGISTERED TEACHERS</div>
+      <div id="t-email-list" style="max-height:320px;overflow-y:auto"></div>
+    </div>
+
+    <!-- Batches & branches -->
+    <div class="card admin-only">
+      <div class="ct">Batches & Branches</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--ink3);margin-bottom:6px">BATCHES</div>
+          <div id="b-list-d" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px"></div>
+          <div style="display:flex;gap:4px"><input type="text" id="new-batch" placeholder="A1" style="flex:1;margin-bottom:0;font-size:12px;padding:6px 8px"><button class="btn bb bsm" style="padding:6px 10px" onclick="addBatch()">+</button></div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--ink3);margin-bottom:6px">BRANCHES</div>
+          <div id="br-list-d" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px"></div>
+          <div style="display:flex;gap:4px"><input type="text" id="new-branch" placeholder="CSE" style="flex:1;margin-bottom:0;font-size:12px;padding:6px 8px"><button class="btn bb bsm" style="padding:6px 10px" onclick="addBranch()">+</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Threshold -->
+    <div class="card">
+      <div class="ct">Attendance threshold</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="number" id="thresh-v-settings" min="0" max="100" placeholder="75" style="width:80px;margin-bottom:0">
+        <span style="font-size:13px">% minimum</span>
+        <button class="btn bb bsm" onclick="saveThreshSettings()">Save</button>
+      </div>
+      <div class="alert hidden" id="thresh-settings-alert" style="margin-top:8px"></div>
+    </div>
+
+    <!-- Super admin help -->
+    <div class="card superadmin-only">
+      <div class="ct">Super admin help</div>
+      <details class="help-section">
+        <summary>📱 Updating the Android APK</summary>
+        <div>1. Build new APK in Android Studio<br>2. Replace <code>app.apk</code> on Netlify (same filename)<br>3. Update app version above → Save app links<br>4. All users get update prompt on next app launch</div>
+      </details>
+      <details class="help-section">
+        <summary>🌐 Updating the web app</summary>
+        <div>Edit <code>index.html</code> → drag onto Netlify → live in 30s. PWA users auto-update on next open.</div>
+      </details>
+      <details class="help-section">
+        <summary>⚙️ Updating the Apps Script</summary>
+        <div>Open script → paste new code → Save → Deploy → Manage deployments → pencil icon → New version → Deploy. Same URL.</div>
+      </details>
+      <details class="help-section">
+        <summary>👥 Adding teachers</summary>
+        <div>Paste <code>Name | Email | Branch | Abbr</code> lines. Sheets auto-created in your Drive → <code>ECA Attend System → Teacher Sheets</code>.</div>
+      </details>
+      <details class="help-section">
+        <summary>❌ Common errors</summary>
+        <div><b>"Script returned plain text":</b> Old version deployed. Re-deploy with "New version".<br><b>"Session not found":</b> Code expired. Reopen session.<br><b>"Sheet ID not set":</b> Teacher sheet not created — re-add teacher.<br><b>"Connection failed":</b> Check Apps Script URL.</div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bnav" id="bnav">
+  <button class="nb active" id="nav-attend" onclick="showPage('attend')"><div class="ni">✅</div><div class="nl">Attend</div></button>
+  <button class="nb" id="nav-portal" onclick="showPage('portal');loadPortal()"><div class="ni">📊</div><div class="nl" id="nav-portal-lbl">My Stats</div></button>
+  <button class="nb hidden" id="nav-teacher" onclick="showPage('teacher');initTeacher()"><div class="ni">🖥️</div><div class="nl">Teacher</div></button>
+</div>
+
+</div>
+<script>
+
+
+// ── GLOBAL BATCH SELECTOR (defined early so HTML onclick can call it) ──────────
+window.setMode = function(m) {
+  // Always call the real setMode if available
+  window._sessionMode = m;
+  if (typeof sessionMode !== 'undefined') { sessionMode = m; }
+  // Update mode button visuals
+  ['offline','online','bluetooth','wifi'].forEach(function(x) {
+    var el = document.getElementById('mode-' + x);
+    if (el) {
+      if (x === m) {
+        el.classList.add('sel');
+      } else {
+        el.classList.remove('sel');
+      }
+    }
+  });
+  // Show/hide GPS fields
+  var gps = document.getElementById('gps-fields');
+  if (gps) {
+    if (m === 'offline') {
+      gps.classList.remove('hidden');
+    } else {
+      gps.classList.add('hidden');
+    }
+  }
+  // Show/hide BLE warning
+  var bleWarn = document.getElementById('ble-warn');
+  if (bleWarn) {
+    if (m === 'bluetooth') {
+      bleWarn.classList.remove('hidden');
+    } else {
+      bleWarn.classList.add('hidden');
+    }
+  }
+  // Show/hide WiFi notice
+  var wifiNotice = document.getElementById('wifi-notice');
+  if (wifiNotice) {
+    if (m === 'wifi') {
+      wifiNotice.classList.remove('hidden');
+    } else {
+      wifiNotice.classList.add('hidden');
+    }
+  }
+  // Update start button
+  var btn = document.getElementById('ns-start');
+  if (btn) {
+    var sub = (document.getElementById('ns-sub') || {value:''}).value || '';
+    var arr = window._selBatches || [];
+    btn.disabled = !sub.trim() || !arr.length || (m === 'offline' && !window._tLat);
+  }
+};
+
+window.selectBatch = function(b) {
+  var arr = window._selBatches || [];
+  var i = arr.indexOf(b);
+  if (i >= 0) arr.splice(i, 1); else arr.push(b);
+  window._selBatches = arr;
+  // Sync to selBatches variable
+  selBatches = arr;
+  // Update chip appearance
+  var chip = document.getElementById('batch-' + b);
+  if (chip) chip.classList.toggle('sel', arr.includes(b));
+  // Update count
+  var cnt = document.getElementById('sel-batch-count');
+  if (cnt) cnt.textContent = arr.length ? '(' + arr.length + ' selected)' : '';
+  // Update start button
+  var btn = document.getElementById('ns-start');
+  if (btn) {
+    var sub = (document.getElementById('ns-sub') || {}).value || '';
+    btn.disabled = !sub.trim() || !arr.length;
+  }
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
+// =============================================================
+// ECA ATTEND — WEB APP
+// Setup: fill STEP 1 (Firebase config) and STEP 2 (super admin email) below
+// =============================================================
+
+// ─── STEP 1: FIREBASE CONFIG ──────────────────────────────────
+const FIREBASE_CONFIG = {
+apiKey: "AIzaSyDLJNDx7ieb46wY60FvzGZ0PTogkiAVXQQ",
+authDomain: "ecaattend.firebaseapp.com",
+databaseURL: "https://ecaattend-default-rtdb.asia-southeast1.firebasedatabase.app",
+projectId: "ecaattend",
+storageBucket: "ecaattend.firebasestorage.app",
+messagingSenderId: "112731980040",
+appId: "1:112731980040:web:7098798a16d41ec4202cbd"
+};
+
+// ─── STEP 2: SUPER ADMIN EMAIL ────────────────────────────────
+const SUPER_ADMIN_EMAIL = "vinod@ecajmer.ac.in";  // e.g. "vinod@eca.ac.in"
+
+// App version (for native app check)
+const APP_VERSION = "1.0";
+
+// Default batches and branches — shown when admin hasn't configured them yet
+// Admin can override these in Settings → Batches / Branches
+const DEFAULT_BATCHES  = ['A','B','C','D','E','F','A1','A2','A3','B1','B2','B3','C1','C2','C3','D1','D2','D3','X','Y','Z'];
+const DEFAULT_BRANCHES = ['CSE','IT','EE','ECE','EIC','CE','ME','Cyber','MBA','MCA'];
+
+// ─── GLOBAL STATE ─────────────────────────────────────────────
+let db, auth, CU = null, CFG = {}, STUDENTS = [];
+let isTeacher=false, isAdmin=false, isSuperAdmin=false;
+let isParent=false, parentStudent=null;
+let myTeacherRecord=null;
+let selBatches=[], tLat=null, tLng=null, activeSess=null, timerID=null;
+let curSess=null, studentTimerID=null;
+let sessionMode='offline', reopenCodeMode='same', reopenMode='gps';
+let bleBeaconName='', bleBeaconTimer=null, bleCountdownTimer=null, bleCountdown=10;
+let wifiCode='', wifiBeaconTimer=null, wifiCountdownTimer=null, wifiCountdown=10;
+
+const BLE_PREFIX  = 'AP';
+const WIFI_PREFIX = 'ATPRO_';
+
+// ─── UTILITIES ────────────────────────────────────────────────
+const G = id => document.getElementById(id);
+const fmtD = ts => new Date(ts).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+const fmtT = ts => new Date(ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+const today = () => new Date().toISOString().split('T')[0];
+const escHtml = s => String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function SA(id, type, msg) {
+  const el = G(id); if (!el) return;
+  const cls = {gr:'a-gr',rd:'a-rd',am:'a-am',bl:'a-bl',pu:'a-pu'};
+  const ic  = {gr:'✅',rd:'❌',am:'⚠️',bl:'ℹ️',pu:'🔐'};
+  el.className = 'alert ' + (cls[type]||'a-bl');
+  el.innerHTML = '<span class="ai">'+(ic[type]||'ℹ️')+'</span><span>'+msg+'</span>';
+  el.classList.remove('hidden');
+}
+function HA(id) { G(id)?.classList.add('hidden'); }
+
+function isIOS() { return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; }
+
+function getDeviceFingerprint() {
+  const raw = [navigator.userAgent, navigator.language, screen.width+'x'+screen.height,
+               screen.colorDepth, navigator.hardwareConcurrency||0,
+               Intl.DateTimeFormat().resolvedOptions().timeZone].join('|');
+  let h=0; for (let i=0;i<raw.length;i++) { h=((h<<5)-h)+raw.charCodeAt(i); h|=0; }
+  return 'fp_' + Math.abs(h).toString(16).padStart(8,'0');
+}
+
+function haversine(lat1,lon1,lat2,lon2) {
+  const R=6371000, dL=(lat2-lat1)*Math.PI/180, dLn=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dL/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLn/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function splitCSV(line) {
+  const r=[]; let c='', q=false;
+  for (const ch of line) {
+    if (ch==='"') q=!q;
+    else if (ch===','&&!q) { r.push(c); c=''; }
+    else c+=ch;
+  }
+  r.push(c); return r;
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+function init() {
+  if (!FIREBASE_CONFIG.apiKey) {
+    G('app').style.display='flex';
+    G('page-login').innerHTML='<div style="padding:30px;text-align:center"><div style="font-size:40px;margin-bottom:12px">⚙️</div><div style="font-size:18px;font-weight:700;margin-bottom:8px">Setup required</div><div style="font-size:13px;color:var(--ink2);line-height:1.7">Open index.html and paste your Firebase config in STEP 1 near the top.</div></div>';
+    return;
+  }
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db = firebase.database();
+  auth = firebase.auth();
+
+  // Handle redirect result — this fires when user returns from Google login page
+  auth.getRedirectResult().then(result => {
+    // Success handled by onAuthStateChanged below — nothing needed here
+  }).catch(err => {
+    // Only show errors for real auth failures
+    // 'auth/no-current-user' just means no redirect was in progress — ignore it
+    const ignore = ['auth/no-current-user','auth/null-user','auth/internal-error'];
+    if (err && err.code && !ignore.includes(err.code)) {
+      G('app').style.display = 'flex';
+      showPage('login');
+      setTimeout(() => {
+        SA('login-error','rd','Sign-in error: ' + (err.message || err.code) + '<br><small>Try clearing browser cache and retry.</small>');
+      }, 300);
+    }
+  });
+  // No redirect sign-in used — popup only (avoids sessionStorage partitioning issues)
+
+  const urlCode = new URLSearchParams(window.location.search).get('code');
+
+  auth.onAuthStateChanged(async user => {
+    G('app').style.display='flex';
+    if (user) {
+      CU = user;
+      G('nav-teacher').classList.add('hidden');
+      isTeacher=false; isAdmin=false; isSuperAdmin=false;
+      isParent=false; parentStudent=null; myTeacherRecord=null;
+      await loadCFG();
+      applyBranding();
+      await checkRoles(user);
+      updateTopbar(user);
+      await loadStuCache(false);
+      if (urlCode) { showPage('attend'); G('att-code').value=urlCode; findSession(urlCode); }
+      else if (isTeacher) { showPage('teacher'); await initTeacher(); }
+      else if (isParent)  { showPage('portal');  loadPortal(); }
+      else { showPage('attend'); }
+    } else {
+      await loadCFGAnon();
+      applyBranding();
+      showPage('login');
+    }
+  });
+
+  // Register service worker (for PWA)
+  if ('serviceWorker' in navigator) {
+    try {
+      const swCode = 'self.addEventListener("install",e=>self.skipWaiting());self.addEventListener("activate",e=>clients.claim());self.addEventListener("fetch",()=>{});';
+      const blob = new Blob([swCode], {type:'application/javascript'});
+      navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+    } catch(e){}
+  }
+}
+
+// ─── CONFIG ───────────────────────────────────────────────────
+async function loadCFG() {
+  const s = await db.ref('cfg').get();
+  CFG = s.exists() ? s.val() : {};
+  _normalizeCFG();
+}
+
+async function loadCFGAnon() {
+  try {
+    const s = await db.ref('cfg').get();
+    CFG = s.exists() ? s.val() : {};
+  } catch(e) { CFG = {}; }
+  _normalizeCFG();
+}
+
+function _normalizeCFG() {
+  const toArr = v => !v ? [] : Array.isArray(v) ? v : Object.keys(v).sort((a,b)=>Number(a)-Number(b)).map(k=>v[k]);
+  CFG.batches        = toArr(CFG.batches).length  ? toArr(CFG.batches)  : [...DEFAULT_BATCHES];
+  CFG.branches       = toArr(CFG.branches).length ? toArr(CFG.branches) : [...DEFAULT_BRANCHES];
+  CFG.teachers       = toArr(CFG.teachers);
+  CFG.teacherEmails  = toArr(CFG.teacherEmails);
+  CFG.adminEmails    = toArr(CFG.adminEmails);
+  CFG.classTemplates = toArr(CFG.classTemplates).filter(t => {
+    if (!t || typeof t !== 'object' || !t.subject) return false;
+    const s = String(t.subject).trim();
+    // Filter out single-letter subjects (test sessions) and very short ones
+    if (s.length <= 2 && /^[A-Z][0-9]?$/.test(s)) return false;
+    return s.length >= 3;  // real class names are at least 3 chars
+  });
+  CFG.threshold      = CFG.threshold || 75;
+  CFG.sheetUrl       = CFG.sheetUrl || '';
+  CFG.attendanceUrl  = CFG.attendanceUrl || '';
+  CFG.apkUrl         = CFG.apkUrl || '';
+  CFG.iosUrl         = CFG.iosUrl || '';
+  CFG.appVersion     = CFG.appVersion || APP_VERSION;
+  CFG.instName       = CFG.instName || 'ECA Attend';
+  CFG.instSub        = CFG.instSub  || '';
+  CFG.instLogo       = CFG.instLogo || '';
+  CFG.creatorName    = CFG.creatorName || 'Prof. Vinod Kr. Verma · vkvsir.com · ECA';
+  CFG.supportName    = CFG.supportName || '';
+  CFG.supportEmail   = CFG.supportEmail || '';
+  CFG.supportUseSuper = CFG.supportUseSuper !== false;
+  CFG.showDateTable  = !!CFG.showDateTable;
+  CFG.showClassCount = CFG.showClassCount !== false;
+  CFG.showMarks      = !!CFG.showMarks;
+}
+
+async function saveCFG() { await db.ref('cfg').set(CFG); }
+
+function applyBranding() {
+  G('tname').textContent = CFG.instName || 'ECA Attend';
+  G('login-name').textContent = CFG.instName || 'ECA Attend';
+  G('login-inst').textContent = CFG.instSub || '';
+  G('tcred').textContent = CFG.creatorName ? 'By ' + CFG.creatorName : '';
+  G('login-cred').textContent = CFG.creatorName ? 'Powered by ' + CFG.creatorName : '';
+  if (CFG.instLogo) {
+    G('tlogo').innerHTML = '<img src="'+CFG.instLogo+'">';
+    G('login-logo').innerHTML = '<img src="'+CFG.instLogo+'" style="width:100%;height:100%;object-fit:cover">';
+  }
+}
+
+// ─── ROLES ────────────────────────────────────────────────────
+async function checkRoles(user) {
+  const email = user.email.toLowerCase();
+
+  if (SUPER_ADMIN_EMAIL && email === SUPER_ADMIN_EMAIL.toLowerCase()) {
+    isSuperAdmin=true; isAdmin=true; isTeacher=true;
+  }
+  if (!isAdmin && (CFG.adminEmails||[]).map(e=>String(e).toLowerCase()).includes(email)) {
+    isAdmin=true; isTeacher=true;
+  }
+  // Check teacher records (new format with full info)
+  myTeacherRecord = (CFG.teachers||[]).find(t => t && t.email && t.email.toLowerCase()===email) || null;
+  if (myTeacherRecord) isTeacher=true;
+  // Backward compatibility with teacherEmails
+  if (!isTeacher && (CFG.teacherEmails||[]).map(e=>String(e).toLowerCase()).includes(email)) isTeacher=true;
+
+  // Parent check
+  if (!isTeacher) {
+    parentStudent = STUDENTS.find(s => s.parent && s.parent.toLowerCase()===email) || null;
+    if (parentStudent) isParent=true;
+  }
+
+  if (isTeacher) {
+    G('nav-teacher').classList.remove('hidden');
+    G('t-email-lbl').textContent = user.email;
+  }
+  if (isParent) {
+    G('nav-portal-lbl').textContent = 'Child';
+  }
+
+  document.body.classList.remove('is-admin','is-superadmin');
+  if (isAdmin) document.body.classList.add('is-admin');
+  if (isSuperAdmin) document.body.classList.add('is-superadmin');
+  if (isAdmin || isSuperAdmin) G('tab-settings').classList.remove('hidden');
+
+  const rb = G('t-role-badge');
+  if (rb) {
+    if (isSuperAdmin) rb.innerHTML='<span class="role-badge rb-admin">⭐ Super Admin</span>';
+    else if (isAdmin) rb.innerHTML='<span class="role-badge rb-admin">🔑 Admin</span>';
+    else if (isTeacher) rb.innerHTML='<span class="role-badge rb-teacher">👤 Teacher</span>';
+  }
+}
+
+function updateTopbar(user) {
+  const role = isSuperAdmin?'Super Admin':isAdmin?'Admin':isTeacher?'Teacher':isParent?'Parent':'Student';
+  G('tsub').textContent = role + ' · ' + (user.displayName||'').split(' ')[0];
+  const img = user.photoURL
+    ? '<img src="'+user.photoURL+'">'
+    : '<div style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff">'+(user.displayName||'?')[0].toUpperCase()+'</div>';
+  G('tr').innerHTML = '<div onclick="showUserMenu()" class="uchip">'+img+'<span>'+((user.displayName||'').split(' ')[0]||user.email.split('@')[0])+'</span></div>';
+}
+function showUserMenu() {
+  const u=auth.currentUser; if (!u) return;
+  if (confirm('Signed in as:\n'+u.email+'\n\nSign out?')) auth.signOut();
+}
+function signIn() {
+  const p = new firebase.auth.GoogleAuthProvider();
+  p.setCustomParameters({ prompt: 'select_account' });
+  // Use redirect sign-in — works on all platforms including GitHub Pages
+  // Popup is unreliable on hosted environments due to security headers
+  const btn = document.querySelector('#page-login .btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Signing in...'; }
+  auth.signInWithRedirect(p).catch(err => {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.5 2.4-7.2 2.4-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2c-.4.4 6.6-4.8 6.6-14.8 0-1.3-.1-2.6-.4-3.9z"/></svg> Continue with Google'; }
+    SA('login-error','rd','Sign-in failed: ' + (err.message || err.code));
+  });
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────
+function showPage(p) {
+  ['login','attend','portal','teacher'].forEach(x=>{
+    G('page-'+x)?.classList.toggle('active', x===p);
+    G('page-'+x)?.classList.toggle('hidden', x!==p);
+  });
+  ['attend','portal','teacher'].forEach(x=>G('nav-'+x)?.classList.toggle('active', x===p));
+  const lbl = {login:'Sign in',attend:'Mark Attendance',portal:isParent?"Child's record":'My Stats',teacher:'Teacher Console'};
+  G('tsub').textContent = lbl[p] || '';
+}
+
+function tTab(n, btn) {
+  ['session','records','students','settings'].forEach(t=>G('tt-'+t)?.classList.toggle('hidden', t!==n));
+  document.querySelectorAll('#t-tabs .tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if (n==='session')  { renderBatchPicker(); populateBranchSelect(); renderTmpls(); renderBatchWrap(); }
+  if (n==='records')  loadRecs();
+  if (n==='students') loadStuPanel();
+  if (n==='settings') loadSettings();
+}
+
+// ─── STUDENT CACHE ────────────────────────────────────────────
+async function loadStuCache(force) {
+  if (STUDENTS.length && !force) return;
+  try {
+    const s = await db.ref('students_cache').get();
+    if (s.exists()) {
+      const val = s.val();
+      const arr = Array.isArray(val) ? val : Object.values(val||{});
+      STUDENTS = arr.filter(x => x && (x.enr || x.colId));
+    }
+  } catch(e) {}
+  if (!STUDENTS.length && CFG.sheetUrl) {
+    try {
+      const res = await fetch(CFG.sheetUrl + '&cachebust=' + Date.now());
+      if (res.ok) {
+        const text = await res.text();
+        if (text && text.includes(',')) parseStu(text);
+      }
+    } catch(e) {}
+  }
+}
+
+function parseStu(csv) {
+  const lines = csv.split('\n').filter(l=>l.trim());
+  if (!lines.length) return;
+  const hdrs = splitCSV(lines[0]).map(h=>h.trim().toLowerCase().replace(/['"]/g,''));
+  const out = [];
+  for (let i=1; i<lines.length; i++) {
+    const cols = splitCSV(lines[i]);
+    if (cols.length < 3) continue;
+    const o = {};
+    hdrs.forEach((h,idx)=>{o[h]=(cols[idx]||'').trim().replace(/['"]/g,'');});
+    const s = {
+      batch:    o['batch']||o['batch/section']||'',
+      colId:    o['college id']||o['collegeid']||'',
+      enr:      o['enr. number']||o['enr.number']||o['enr number']||o['enrollment']||'',
+      name:     o['student name']||o['name']||'',
+      father:   o['father name']||o['fathername']||'',
+      branch:   o['branch']||'',
+      semester: o['semester']||'',
+      email:    o['email']||o['gmail']||'',
+      mobile:   o['mobile']||o['phone']||'',
+      parent:   o['parent email']||o['parentemail']||o['parent']||''
+    };
+    if (s.enr || s.colId || s.name) out.push(s);
+  }
+  STUDENTS = out;
+  const indexed = {};
+  out.forEach((s,i)=>{indexed[i]=s;});
+  db.ref('students_cache').set(indexed).catch(()=>{});
+}
+
+// ─── FIND SESSION + ROUTE ─────────────────────────────────────
+async function findSession(code) {
+  code = String(code||'').trim();
+  if (code.length!==6) { SA('att-code-alert','am','Enter 6-digit code.'); return; }
+  SA('att-code-alert','bl','Looking up session...');
+  const snap = await db.ref('sessions/'+code).get();
+  if (!snap.exists()) { SA('att-code-alert','rd','Session not found.'); return; }
+  const sess = snap.val();
+  if (sess.status==='ended') { SA('att-code-alert','rd','This session has ended.'); return; }
+  if (Date.now() > sess.expiresAt) { SA('att-code-alert','rd','Window closed. Ask teacher to reopen.'); return; }
+  curSess = { code, ...sess };
+  HA('att-code-alert');
+  G('att-code-sec').classList.add('hidden');
+
+  // Verify Gmail is in registry BEFORE showing any mode UI
+  await loadStuCache(false);
+  const student = STUDENTS.find(s => s.email && s.email.toLowerCase()===CU.email.toLowerCase());
+
+  // Build session header card
+  const bStr = Array.isArray(sess.batches) ? sess.batches.join(' + ') : (sess.batch||'All');
+  const modeBadge = {
+    bluetooth: '<span class="badge b-bl">🔵 Bluetooth</span>',
+    wifi:      '<span class="badge b-gr">📶 Wi-Fi</span>',
+    online:    '<span class="badge b-tl">💻 Online</span>',
+    offline:   '<span class="badge b-gr">📍 '+(sess.radius||50)+'m</span>'
+  }[sess.mode || 'offline'];
+  const cardHtml = '<div style="font-size:15px;font-weight:700;margin-bottom:8px">'+escHtml(sess.subject)+'</div>' +
+    '<div style="display:flex;gap:6px;flex-wrap:wrap">' +
+      '<span class="badge b-bl">'+escHtml(bStr)+'</span>' +
+      (sess.branch?'<span class="badge b-am">'+escHtml(sess.branch)+'</span>':'') +
+      (sess.semester?'<span class="badge b-pu">Sem '+escHtml(sess.semester)+'</span>':'') +
+      '<span class="badge b-am" id="att-sess-timer">⏱ calculating...</span>' +
+      modeBadge +
+    '</div>';
+  G('att-sess-card').innerHTML = cardHtml;
+  startStudentTimer(sess.expiresAt);
+
+  if (!student) {
+    G('unreg-email').textContent = CU.email;
+    G('att-unreg-sec').classList.remove('hidden');
+    return;
+  }
+
+  // Route ONLY to the exact mode the teacher chose
+  if (sess.mode==='bluetooth') {
+    G('att-ble-sec').classList.remove('hidden');
+    G('att-ble-sess-card').innerHTML = cardHtml;
+    runBLE(student);
+  } else if (sess.mode==='wifi') {
+    G('att-wifi-sec').classList.remove('hidden');
+    G('att-wifi-sess-card').innerHTML = cardHtml;
+    runWiFi(student);
+  } else if (sess.mode==='online') {
+    autoMarkOnline(student);
+  } else {
+    G('att-gps-sec').classList.remove('hidden');
+    runGPS(student);
+  }
+}
+
+function startStudentTimer(expiresAt) {
+  if (studentTimerID) clearInterval(studentTimerID);
+  function tick() {
+    const rem = expiresAt - Date.now();
+    const el = G('att-sess-timer');
+    if (!el) { clearInterval(studentTimerID); return; }
+    if (rem <= 0) {
+      el.textContent='⏱ Window closed'; el.style.background='var(--rl)'; el.style.color='var(--red)';
+      clearInterval(studentTimerID);
+    } else {
+      const m=Math.floor(rem/60000), s=Math.floor((rem%60000)/1000);
+      el.textContent='⏱ '+m+':'+String(s).padStart(2,'0')+' left';
+    }
+  }
+  tick(); studentTimerID = setInterval(tick, 1000);
+}
+
+// ─── GPS MODE ─────────────────────────────────────────────────
+function runGPS(student) {
+  const ring=G('gring'), lbl=G('glbl'), det=G('gdet');
+  ring.className='gring spin'; lbl.textContent='Checking'; det.textContent='Getting location...';
+  HA('gps-alert'); G('gretry-btn').classList.add('hidden');
+
+  if (!navigator.geolocation) {
+    ring.className='gring fail'; lbl.textContent='No GPS';
+    SA('gps-alert','rd','GPS not available on this device.');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const dist = Math.round(haversine(pos.coords.latitude, pos.coords.longitude, curSess.lat, curSess.lng));
+    det.textContent='You are '+dist+'m from class (limit: '+curSess.radius+'m)';
+    if (curSess.reopenMode==='code-only') {
+      ring.className='gring fail'; lbl.textContent='Code only';
+      SA('gps-alert','am','This session requires secret code. Ask a present classmate to help you.');
+      return;
+    }
+    if (dist <= curSess.radius) {
+      ring.className='gring ok'; lbl.textContent='In range';
+      SA('gps-alert','gr','✓ Location verified — '+dist+'m from class.');
+      await doMark(student, 'gps', false);
+    } else {
+      ring.className='gring fail'; lbl.textContent='Too far';
+      SA('gps-alert','rd',dist+'m away. Must be within '+curSess.radius+'m. Ask a classmate to mark via Help a Friend.');
+      G('gretry-btn').classList.remove('hidden');
+    }
+  }, err => {
+    ring.className='gring fail'; lbl.textContent='GPS error';
+    SA('gps-alert','rd', err.code===1 ? 'Location denied. Enable in browser settings.' : 'Could not get location.');
+    G('gretry-btn').classList.remove('hidden');
+  }, {enableHighAccuracy:true, timeout:15000, maximumAge:0});
+}
+
+async function autoMarkOnline(student) {
+  const key = (student.colId || student.enr).replace(/[^\w]/g, '_');
+  const snap = await db.ref('sessions/'+curSess.code+'/attendance/'+key).get();
+  if (snap.exists()) { showResult(student, true); return; }
+  await doMark(student, 'online-email', false);
+}
+
+// ─── BLE MODE ─────────────────────────────────────────────────
+function runBLE(student) {
+  setBLERing('ready');
+  if (!navigator.bluetooth || isIOS()) {
+    G('ble-scan-btn').classList.add('hidden');
+    G('ble-status-msg').textContent = 'Bluetooth not supported in this browser.';
+    showAppBanner(G('ble-fallback'));
+  }
+}
+
+async function startBLEScan() {
+  const student = STUDENTS.find(s => s.email && s.email.toLowerCase()===CU.email.toLowerCase());
+  if (!student) return;
+  const btn = G('ble-scan-btn');
+  setBLERing('scanning');
+  G('ble-status-msg').textContent = "Scanning for teacher's device...";
+  btn.disabled=true; btn.textContent='🔵 Scanning...';
+  SA('ble-alert','bl','Searching...');
+  try {
+    const device = await navigator.bluetooth.requestDevice({ acceptAllDevices:true, optionalServices:[] });
+    setBLERing('checking');
+    G('ble-status-msg').textContent='Verifying...';
+    await verifyBLEAndMark(device.name||device.id||'unknown', student);
+  } catch(err) {
+    if (err.name==='NotFoundError' || (err.message||'').includes('chosen')) {
+      SA('ble-alert','am','No device selected. Tap Scan again.');
+    } else {
+      SA('ble-alert','rd','Bluetooth error: '+err.message);
+    }
+    setBLERing('fail');
+    btn.disabled=false; btn.textContent='🔵 Retry Scan';
+  }
+}
+
+async function verifyBLEAndMark(detectedDevice, student) {
+  const bleSnap = await db.ref('sessions/'+curSess.code+'/ble').get();
+  if (!bleSnap.exists() || !bleSnap.val().active) {
+    SA('ble-alert','rd','Bluetooth session not active.');
+    setBLERing('fail'); G('ble-scan-btn').disabled=false; G('ble-scan-btn').textContent='🔵 Retry'; return;
+  }
+  const age = Date.now() - (bleSnap.val().rotatedAt||0);
+  if (age > 12000) {
+    SA('ble-alert','am','Beacon expired. Tap Scan again.');
+    setBLERing('fail'); G('ble-scan-btn').disabled=false; G('ble-scan-btn').textContent='🔵 Retry'; return;
+  }
+  const fp = getDeviceFingerprint();
+  const fpSnap = await db.ref('sessions/'+curSess.code+'/bleLog/'+fp).get();
+  if (fpSnap.exists()) {
+    const prev = fpSnap.val();
+    if (prev.enr && prev.enr !== student.enr) {
+      await db.ref('sessions/'+curSess.code+'/proxyFlags').push({
+        fingerprint:fp, attemptEmail:CU.email, prevEnr:prev.enr, time:Date.now(), type:'ble-device-reuse'
+      });
+      SA('ble-alert','rd','⚠️ Proxy detected: this device was already used for another student.');
+      setBLERing('fail'); return;
+    }
+  }
+  await db.ref('sessions/'+curSess.code+'/bleLog/'+fp).set({
+    enr:student.enr, colId:student.colId, name:student.name, email:CU.email, detectedDevice, markedAt:Date.now()
+  });
+  setBLERing('ok');
+  SA('ble-alert','gr','✅ Bluetooth verified.');
+  G('att-ble-sec').classList.add('hidden');
+  await doMark(student, 'bluetooth', false);
+}
+
+function setBLERing(state) {
+  const ring=G('ble-ring'); if (!ring) return;
+  const cfg = {ready:{b:'var(--bdr)',bg:'',l:'Ready'},
+               scanning:{b:'var(--blue)',bg:'var(--bl)',l:'Scanning'},
+               checking:{b:'var(--amber)',bg:'var(--al)',l:'Checking'},
+               ok:{b:'var(--green)',bg:'var(--gl)',l:'Found!'},
+               fail:{b:'var(--red)',bg:'var(--rl)',l:'Failed'}};
+  const c = cfg[state]||cfg.ready;
+  ring.style.border='3px solid '+c.b; ring.style.background=c.bg;
+  const lbl=G('ble-ring-lbl'); if (lbl) lbl.textContent=c.l;
+}
+
+// ─── WI-FI MODE ───────────────────────────────────────────────
+function runWiFi(student) {
+  setWiFiRing('ready');
+  if (isIOS()) {
+    G('wifi-status-msg').textContent = 'iOS: native app required for Wi-Fi scan.';
+    showAppBanner(G('wifi-fallback'));
+  }
+}
+
+async function startWiFiScan() {
+  const student = STUDENTS.find(s => s.email && s.email.toLowerCase()===CU.email.toLowerCase());
+  if (!student) return;
+  const btn = G('wifi-scan-btn');
+  btn.disabled=true; btn.textContent='📶 Scanning...';
+  SA('wifi-alert','bl','Reading beacon...');
+  setWiFiRing('scanning');
+  try {
+    const snap = await db.ref('sessions/'+curSess.code+'/wifi').get();
+    if (!snap.exists() || !snap.val().active) {
+      SA('wifi-alert','rd','Wi-Fi session not active.');
+      setWiFiRing('fail'); btn.disabled=false; btn.textContent='📶 Retry'; return;
+    }
+    const age = Date.now() - (snap.val().rotatedAt||0);
+    if (age > 12000) {
+      SA('wifi-alert','am','Beacon expired. Tap Scan again.');
+      setWiFiRing('fail'); btn.disabled=false; btn.textContent='📶 Retry'; return;
+    }
+    setWiFiRing('checking');
+    const fp = getDeviceFingerprint();
+    const fpSnap = await db.ref('sessions/'+curSess.code+'/bleLog/'+fp).get();
+    if (fpSnap.exists()) {
+      const prev = fpSnap.val();
+      if (prev.enr && prev.enr !== student.enr) {
+        await db.ref('sessions/'+curSess.code+'/proxyFlags').push({
+          fingerprint:fp, attemptEmail:CU.email, prevEnr:prev.enr, time:Date.now(), type:'wifi-device-reuse'
+        });
+        SA('wifi-alert','rd','⚠️ Proxy detected.'); setWiFiRing('fail'); return;
+      }
+    }
+    await db.ref('sessions/'+curSess.code+'/bleLog/'+fp).set({
+      enr:student.enr, colId:student.colId, name:student.name, email:CU.email, method:'wifi-web', markedAt:Date.now()
+    });
+    setWiFiRing('ok');
+    SA('wifi-alert','gr','✅ Wi-Fi verified.');
+    G('att-wifi-sec').classList.add('hidden');
+    await doMark(student, 'wifi', false);
+  } catch(e) {
+    SA('wifi-alert','rd','Error: '+e.message);
+    setWiFiRing('fail'); btn.disabled=false; btn.textContent='📶 Retry';
+  }
+}
+
+function setWiFiRing(state) {
+  const ring=G('wifi-ring'); if (!ring) return;
+  const cfg = {ready:{b:'var(--bdr)',bg:'',l:'Ready'},
+               scanning:{b:'var(--green)',bg:'var(--gl)',l:'Scanning'},
+               checking:{b:'var(--amber)',bg:'var(--al)',l:'Checking'},
+               ok:{b:'var(--green)',bg:'var(--gl)',l:'Found!'},
+               fail:{b:'var(--red)',bg:'var(--rl)',l:'Failed'}};
+  const c = cfg[state]||cfg.ready;
+  ring.style.border='3px solid '+c.b; ring.style.background=c.bg;
+  const lbl=G('wifi-ring-lbl'); if (lbl) lbl.textContent=c.l;
+}
+
+// ─── APP DOWNLOAD BANNER ──────────────────────────────────────
+function showAppBanner(container) {
+  if (!container) return;
+  const ios = isIOS();
+  const link = ios ? CFG.iosUrl : CFG.apkUrl;
+  if (!link) {
+    container.innerHTML = '<div class="alert a-am" style="font-size:12px;margin-top:10px"><span class="ai">⚠️</span><span>Mobile app download link not yet configured by admin.</span></div>';
+  } else {
+    container.innerHTML = '<div class="appbanner">' +
+      '<div class="appbanner-title">📱 Get the mobile app</div>' +
+      '<div class="appbanner-desc">For best results on '+(ios?'iOS':'this device')+', install the '+escHtml(CFG.instName||'ECA Attend')+' app.</div>' +
+      '<a class="appbanner-btn" href="'+escHtml(link)+'" target="_blank">'+(ios?'Install via TestFlight':'Download APK')+'</a>' +
+    '</div>';
+  }
+  container.classList.remove('hidden');
+}
+
+// ─── DO MARK (central writer) ─────────────────────────────────
+async function doMark(student, method, isProxy, secret) {
+  const key = (student.colId||student.enr).replace(/[^\w]/g,'_');
+  const periods = curSess.periods || 1;
+  const rec = {
+    enr:student.enr, colId:student.colId||'', name:student.name||'—', father:student.father||'',
+    batch:student.batch||'', branch:student.branch||'', semester:student.semester||'',
+    time:Date.now(), method, isProxy:!!isProxy
+  };
+  await db.ref('sessions/'+curSess.code+'/attendance/'+key).set(rec);
+  for (let p=0; p<periods; p++) {
+    await db.ref('attendance/'+key+'/'+curSess.code+'_p'+(p+1)).set({
+      sessionCode:curSess.code, subject:curSess.subject,
+      batch:student.batch||'', branch:student.branch||'', semester:student.semester||'',
+      date:today(), time:Date.now()+p, method, isProxy:!!isProxy
+    });
+  }
+  if (isProxy) {
+    const ps = await db.ref('sessions/'+curSess.code+'/proxyCount').get();
+    await db.ref('sessions/'+curSess.code+'/proxyCount').set((ps.val()||0)+1);
+  }
+  // Fire-and-forget sheet write
+  postToScript({
+    action: 'markPresent',
+    sheetId: curSess.sheetId || '',
+    subject: curSess.subject,
+    date: today(),
+    sessionCode: curSess.mode==='online' ? curSess.code+' (Online)' : curSess.code,
+    enr: student.enr, colId: student.colId||'', name: student.name||'',
+    batch: student.batch||'', branch: student.branch||'', semester: student.semester||'',
+    method, isProxy: !!isProxy,
+    batches: Array.isArray(curSess.batches) ? curSess.batches : (curSess.batch?curSess.batch.split(','):[]),
+    branches: curSess.branch ? [curSess.branch] : [],
+    isLab: (curSess.subject||'').toLowerCase().includes('lab'),
+    teacherName: curSess.teacherName||'', teacherEmail: curSess.teacherEmail||'',
+    instName: CFG.instName||'', creatorName: CFG.creatorName||'',
+    supportName: _supportFor().name, supportEmail: _supportFor().email
+  });
+  showResult(student, false);
+}
+
+function _supportFor() {
+  if (CFG.supportUseSuper || !CFG.supportName) {
+    return { name: 'Super Admin', email: SUPER_ADMIN_EMAIL||'' };
+  }
+  return { name: CFG.supportName, email: CFG.supportEmail };
+}
+
+async function postToScript(payload) {
+  if (!CFG.attendanceUrl) return;
+  try {
+    await fetch(CFG.attendanceUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify(payload)
+    });
+  } catch(e) {}
+}
+
+
+// ─── RESULT + HELP A FRIEND + STATISTICS ──────────────────────
+async function showResult(student, already) {
+  ['att-gps-sec','att-ble-sec','att-wifi-sec','att-unreg-sec','att-code-sec'].forEach(id=>G(id)?.classList.add('hidden'));
+  G('att-result-sec').classList.remove('hidden');
+  const ra = G('att-res-alert');
+  ra.className = already ? 'alert a-am' : 'alert a-gr';
+  ra.innerHTML = already
+    ? '<span class="ai">ℹ️</span><span>You have already marked attendance today.</span>'
+    : '<span class="ai">✅</span><span>Attendance marked! Welcome, <b>'+escHtml(student?.name||CU.displayName||'')+'</b></span>';
+
+  // Help a Friend (same batch/branch peers)
+  if (curSess && STUDENTS.length) {
+    const batches = Array.isArray(curSess.batches) ? curSess.batches : (curSess.batch?curSess.batch.split(','):[]);
+    const filtered = STUDENTS.filter(s => (!batches.length || batches.includes(s.batch)) && (!curSess.branch || s.branch===curSess.branch));
+    populateHelpList(filtered, student?.enr);
+  }
+
+  // Statistics — last 3 dates + overall %
+  const key = (student.colId||student.enr).replace(/[^\w]/g,'_');
+  let dh = '';
+  const attSnap = await db.ref('attendance/'+key).get();
+  if (attSnap.exists()) {
+    const entries = Object.values(attSnap.val()).sort((a,b)=>b.time-a.time);
+    const unique=[]; const seen=new Set();
+    entries.forEach(e => { if (!seen.has(e.date) && unique.length<3) { seen.add(e.date); unique.push(e); }});
+    if (unique.length) {
+      dh = '<div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Last 3 classes</div>' +
+        unique.map((e,i)=>'<div class="dcard"><div class="ddot '+(i===0?'today':'prev')+'"></div><div style="flex:1"><div style="font-size:13px;font-weight:500">'+escHtml(e.subject||'Class')+'</div><div style="font-size:11px;color:var(--ink3)">'+fmtD(e.time)+' · '+fmtT(e.time)+'</div></div><span class="badge b-gr">P</span></div>').join('');
+    }
+  }
+  G('att-dates').innerHTML = dh;
+
+  const ss = await db.ref('sessions').get();
+  let tot=0, att=0;
+  if (ss.exists()) ss.forEach(c => {
+    const s=c.val();
+    if (s.status==='ended') {
+      const p = s.periods||1;
+      const b = Array.isArray(s.batches) ? s.batches : (s.batch?s.batch.split(','):[]);
+      if (!b.length || !student.batch || b.includes(student.batch)) {
+        tot+=p;
+        if (s.attendance && s.attendance[key]) att+=p;
+      }
+    }
+  });
+  const pct = tot>0 ? Math.round(att/tot*100) : null;
+  const pc = pct===null ? 'pg' : pct>=CFG.threshold ? 'pg' : pct>=(CFG.threshold-10) ? 'pa' : 'pr';
+  G('att-stats').innerHTML = pct!==null
+    ? '<div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:4px"><span>Overall attendance</span><span>'+pct+'%</span></div><div class="pbar"><div class="pbf '+pc+'" style="width:'+pct+'%"></div></div>' + (pct<CFG.threshold ? '<div class="alert a-rd" style="margin-top:8px"><span class="ai">⚠️</span><span>Below required '+CFG.threshold+'%</span></div>' : '')
+    : '<div style="font-size:12px;color:var(--ink3);text-align:center">% available after teacher ends sessions.</div>';
+}
+
+function populateHelpList(list, ownEnr) {
+  const hsel = G('help-roll');
+  hsel.innerHTML = '<option value="">— Select —</option>';
+  list.forEach(s => { if (s.enr!==ownEnr) hsel.innerHTML += '<option value="'+escHtml(s.enr)+'">'+escHtml(s.enr)+' — '+escHtml(s.name)+'</option>'; });
+}
+
+function filterHelpList(q) {
+  q = q.trim().toLowerCase();
+  if (!curSess || !STUDENTS.length) return;
+  const batches = Array.isArray(curSess.batches) ? curSess.batches : (curSess.batch?curSess.batch.split(','):[]);
+  const all = STUDENTS.filter(s => (!batches.length || batches.includes(s.batch)) && (!curSess.branch || s.branch===curSess.branch));
+  const filtered = q ? all.filter(s => (s.name||'').toLowerCase().includes(q) || (s.enr||'').toLowerCase().includes(q)) : all;
+  const ownEnr = STUDENTS.find(s => s.email && s.email.toLowerCase()===CU.email.toLowerCase())?.enr || '';
+  populateHelpList(filtered, ownEnr);
+}
+
+async function onHelpRoll() {
+  const enr = G('help-roll').value;
+  if (!enr) { G('help-name-f').classList.add('hidden'); G('help-code-f').classList.add('hidden'); G('help-btn').classList.add('hidden'); return; }
+  const s = STUDENTS.find(x=>x.enr===enr);
+  if (s) { G('help-name-d').textContent = s.name + (s.father?' (F: '+s.father+')':''); G('help-name-f').classList.remove('hidden'); }
+  const key = (s?.colId||enr).replace(/[^\w]/g,'_');
+  const snap = await db.ref('sessions/'+curSess.code+'/attendance/'+key).get();
+  if (snap.exists()) { SA('help-alert','am','Already marked.'); G('help-code-f').classList.add('hidden'); G('help-btn').classList.add('hidden'); return; }
+  HA('help-alert'); G('help-code-f').classList.remove('hidden'); G('help-btn').classList.remove('hidden');
+}
+
+async function submitHelp() {
+  const enr = G('help-roll').value;
+  const secret = G('help-secret').value.trim().toUpperCase();
+  if (!enr) { SA('help-alert','am','Select friend.'); return; }
+  if (!secret) { SA('help-alert','am','Enter secret code.'); return; }
+  const cs = await db.ref('sessions/'+curSess.code+'/secretCodes/'+secret).get();
+  if (!cs.exists()) { SA('help-alert','rd','Invalid code.'); return; }
+  const cd = cs.val();
+  if (cd.deleted) { SA('help-alert','rd','Code already used.'); return; }
+  const s = STUDENTS.find(x=>x.enr===enr);
+  await db.ref('sessions/'+curSess.code+'/secretCodes/'+secret+'/usedCount').set((cd.usedCount||0)+1);
+  await db.ref('sessions/'+curSess.code+'/secretCodes/'+secret+'/lastFor').set(enr);
+  await db.ref('sessions/'+curSess.code+'/secretCodes/'+secret+'/deleted').set(true);
+
+  // Temporarily swap session context for the mark
+  const savedCurSess = curSess;
+  curSess = savedCurSess;  // same session
+  await doMark(s, 'secret-code', true, secret);
+  curSess = savedCurSess;
+
+  G('help-roll').value=''; G('help-search').value=''; G('help-secret').value='';
+  G('help-name-f').classList.add('hidden'); G('help-code-f').classList.add('hidden'); G('help-btn').classList.add('hidden');
+  SA('help-alert','gr','Marked for '+(s?.name||'friend')+'!');
+}
+
+// ─── PORTAL (student or parent) ───────────────────────────────
+async function loadPortal() {
+  if (!CU) return;
+  G('portal-content').innerHTML = '<div class="spin"></div>';
+  await loadStuCache();
+
+  let student = null, asParent = false;
+  if (isParent && parentStudent) { student = parentStudent; asParent = true; }
+  else { student = STUDENTS.find(s => s.email && s.email.toLowerCase()===CU.email.toLowerCase()); }
+
+  if (!student) {
+    G('portal-content').innerHTML = '<div class="card"><div class="alert a-am"><span class="ai">⚠️</span><span>Your Gmail (<b>'+escHtml(CU.email)+'</b>) is not in our database. Please contact your teacher to update.</span></div></div>';
+    return;
+  }
+
+  G('portal-title').textContent = asParent ? student.name+"'s record" : 'My Attendance';
+  G('portal-sub').textContent   = asParent ? 'Parent view' : 'Your personal record';
+
+  let html = '<div class="card">' +
+    '<div style="display:flex;align-items:center;gap:12px">' +
+      '<div class="sav" style="width:48px;height:48px;font-size:18px">'+escHtml((student.name||'?')[0].toUpperCase())+'</div>' +
+      '<div>' +
+        '<div style="font-size:16px;font-weight:700">'+escHtml(student.name)+'</div>' +
+        '<div style="font-size:11px;color:var(--ink3);font-family:var(--mono)">'+escHtml(student.colId||student.enr)+' · '+escHtml(student.batch||'')+' · '+escHtml(student.branch||'')+(student.semester?' · Sem '+escHtml(student.semester):'')+'</div>' +
+      '</div>' +
+    '</div>' +
+    (asParent ? '<div class="alert a-am" style="margin-top:12px;font-size:12px"><span class="ai">👨‍👩‍👧</span><span>Parent view. Tap teacher email on any subject card to contact directly.</span></div>' : '') +
+    (!asParent && !student.parent ? '<div class="alert a-bl" style="margin-top:12px;font-size:12px"><span class="ai">ℹ️</span><span>Parent email not registered. Ask your teacher to add it.</span></div>' : '') +
+  '</div>';
+
+  G('portal-content').innerHTML = html + '<div class="card" id="portal-loading" style="text-align:center"><div class="spin"></div><div style="font-size:12px;color:var(--ink3);margin-top:8px">Loading records...</div></div>';
+
+  // Fetch rich data from Apps Script
+  let rich = null;
+  if (CFG.attendanceUrl) {
+    try {
+      const idPart = student.colId ? 'colId='+encodeURIComponent(student.colId)+'&enr='+encodeURIComponent(student.enr||'') : 'enr='+encodeURIComponent(student.enr||'');
+      const res = await fetch(CFG.attendanceUrl + '?action=getStudentData&' + idPart + '&v=' + Date.now());
+      if (res.ok) {
+        const txt = await res.text();
+        try { const d = JSON.parse(txt); if (d.status==='ok' && d.subjects) rich = d; } catch(e) {}
+      }
+    } catch(e){}
+  }
+
+  G('portal-loading')?.remove();
+
+  if (rich && rich.subjects && rich.subjects.length) {
+    // Fetch per-subject visibility for each unique teacher
+    // Key: teacherVis/teacher-email-key/subject-key
+    const visCache = {};  // 'teacherEmail|subject' -> vis object
+    await Promise.all(rich.subjects.map(async subj => {
+      if (!subj.teacherEmail) return;
+      const cacheKey = subj.teacherEmail + '|' + subj.subject;
+      if (visCache[cacheKey] !== undefined) return;
+      try {
+        const eKey = subj.teacherEmail.toLowerCase().replace(/[.#$\[\]]/g, '_');
+        const sKey = subj.subject.replace(/[.#$\[\]]/g, '_');
+        const vs = await db.ref('teacherVis/' + eKey + '/' + sKey).get();
+        visCache[cacheKey] = vs.exists() ? vs.val() : null;
+      } catch(e) { visCache[cacheKey] = null; }
+    }));
+    rich.subjects.forEach(subj => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const cacheKey = (subj.teacherEmail||'') + '|' + subj.subject;
+      const vis = visCache[cacheKey] || null;
+      card.innerHTML = buildSubjectCard(subj, asParent, vis);
+      G('portal-content').appendChild(card);
+    });
+    return;
+  }
+
+  // Fallback: Firebase-only data
+  const ss = await db.ref('sessions').get();
+  const key = (student.colId||student.enr).replace(/[^\w]/g,'_');
+  let tot=0, att=0; const sessions=[];
+  if (ss.exists()) ss.forEach(c => {
+    const s=c.val();
+    if (s.status==='ended') {
+      const p = s.periods||1;
+      const b = Array.isArray(s.batches) ? s.batches : (s.batch?s.batch.split(','):[]);
+      if (!b.length || !student.batch || b.includes(student.batch)) {
+        tot+=p;
+        if (s.attendance && s.attendance[key]) {
+          att+=p;
+          sessions.push({subject:s.subject, time:s.attendance[key].time, code:c.key});
+        }
+      }
+    }
+  });
+  const pct = tot>0 ? Math.round(att/tot*100) : null;
+  const pc = pct===null?'pg':pct>=CFG.threshold?'pg':pct>=(CFG.threshold-10)?'pa':'pr';
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = '<div class="ct">Overall attendance</div>' +
+    (pct!==null
+      ? '<div style="display:flex;justify-content:space-between;font-size:15px;font-weight:700;margin-bottom:6px"><span>'+att+'/'+tot+' classes</span><span>'+pct+'%</span></div><div class="pbar"><div class="pbf '+pc+'" style="width:'+pct+'%"></div></div>'
+      : '<div class="ph">No sessions ended yet.</div>');
+  G('portal-content').appendChild(card);
+
+  if (sessions.length) {
+    sessions.sort((a,b)=>b.time-a.time);
+    const hs = document.createElement('div');
+    hs.className='card';
+    hs.innerHTML = '<div class="ct">Recent sessions</div>' + sessions.slice(0,10).map(s=>'<div class="srow"><span style="font-size:18px">📗</span><div class="sinf"><div class="sname">'+escHtml(s.subject)+'</div><div class="sroll">'+fmtD(s.time)+' · '+fmtT(s.time)+'</div></div><span class="badge b-gr">P</span></div>').join('');
+    G('portal-content').appendChild(hs);
+  }
+}
+
+function buildSubjectCard(subj, asParent, vis) {
+  // vis = per-teacher visibility flags { showDateTable, showClassCount, showMarks }
+  // Falls back to CFG (global) if not provided
+  const showDateTable  = vis ? !!vis.showDateTable  : !!CFG.showDateTable;
+  const showClassCount = vis ? vis.showClassCount !== false : CFG.showClassCount !== false;
+  const showMarks      = vis ? !!vis.showMarks      : !!CFG.showMarks;
+
+  const th = CFG.threshold||75;
+  const pct = subj.totalClasses>0 ? Math.round(subj.attended/subj.totalClasses*100) : null;
+  const pc = pct===null?'pg':pct>=th?'pg':pct>=(th-10)?'pa':'pr';
+  const teacherLine = subj.teacherName
+    ? (asParent && subj.teacherEmail
+        ? '<div style="font-size:11px;color:var(--ink3);margin-top:4px">Teacher: <b style="color:var(--ink2)">'+escHtml(subj.teacherName)+'</b> · <a href="mailto:'+escHtml(subj.teacherEmail)+'" style="color:var(--blue);text-decoration:none">'+escHtml(subj.teacherEmail)+'</a></div>'
+        : '<div style="font-size:11px;color:var(--ink3);margin-top:4px">Teacher: <b style="color:var(--ink2)">'+escHtml(subj.teacherName)+'</b></div>')
+    : '';
+
+  let html = '<div class="ct">'+escHtml(subj.subject)+'</div>' + teacherLine;
+
+  if (showClassCount) {
+    html += '<div style="display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-top:10px;margin-bottom:6px"><span>'+(subj.attended||0)+'/'+(subj.totalClasses||0)+' classes</span><span>'+(pct!==null?pct+'%':'—')+'</span></div>';
+  } else {
+    html += '<div style="display:flex;justify-content:flex-end;font-size:14px;font-weight:600;margin-top:10px;margin-bottom:6px"><span>'+(pct!==null?pct+'%':'—')+'</span></div>';
+  }
+  html += '<div class="pbar"><div class="pbf '+pc+'" style="width:'+(pct||0)+'%"></div></div>' +
+    (pct!==null && pct<th ? '<div class="alert a-rd" style="margin-top:8px"><span class="ai">⚠️</span><span>Below required '+th+'%</span></div>' : '');
+
+  if (showMarks && subj.marks && Object.keys(subj.marks).length) {
+    const cols = Object.keys(subj.marks);
+    html += '<table class="perf-table" style="margin-top:12px"><tr><th>Item</th><th>Marks</th></tr>' + cols.map(k=>'<tr><td>'+escHtml(k)+'</td><td>'+escHtml(subj.marks[k])+'</td></tr>').join('') + '</table>';
+  }
+  if (showDateTable && subj.dates && subj.dates.length) {
+    html += '<div style="overflow-x:auto;margin-top:10px"><table class="perf-table"><tr><th>Date</th><th>Status</th></tr>' + subj.dates.slice(-10).map(d=>'<tr><td>'+escHtml(d.date)+'</td><td><span class="badge '+(d.present?'b-gr':'b-rd')+'">'+(d.present?'P':'A')+'</span></td></tr>').join('') + '</table></div>';
+  }
+  return html;
+}
+
+// ─── TEACHER CONSOLE — INIT + SESSION MGMT ────────────────────
+async function initTeacher() {
+  await loadCFG();         // must come first — batches and branches come from CFG
+  await loadStuCache();
+  renderBatchPicker();     // populate batch buttons
+  populateBranchSelect();  // populate branch dropdown
+  await loadTeacherVisibility();
+  await renderTmpls();     // async — loads per-class vis settings
+  renderRecentSessions();
+  await checkActiveSession();
+
+  const subInput = G('ns-sub');
+  if (subInput) subInput.addEventListener('input', updateStartBtn);
+
+  // Clean up corrupt templates and save back to Firebase
+  const cleaned = (CFG.classTemplates || []).filter(t => {
+    if (!t || typeof t !== 'object' || !t.subject) return false;
+    const s = String(t.subject).trim();
+    if (s.length <= 2 && /^[A-Z][0-9]?$/.test(s)) return false;
+    return s.length >= 3;
+  });
+  if (cleaned.length !== (CFG.classTemplates || []).length) {
+    CFG.classTemplates = cleaned;
+    saveCFG().catch(() => {});  // save cleaned data back to Firebase silently
+  }
+
+  // Final render
+  renderBatchPicker();
+  populateBranchSelect();
+  await renderTmpls();
+}
+
+async function loadTeacherVisibility() {
+  // Visibility is now per-class (per subject). It is loaded inside renderTmpls()
+  // which reads teacherVis/email/subjectKey for each saved class.
+  // No global CFG update needed here.
+  CFG.showDateTable  = false;
+  CFG.showClassCount = true;
+  CFG.showMarks      = false;
+}
+
+async function checkActiveSession() {
+  // Only restore sessions from TODAY that are genuinely active (not expired)
+  const todayStr = today();
+  const nowMs = Date.now();
+  const snap = await db.ref('sessions').limitToLast(50).get();
+  let found = null;
+  if (snap.exists()) snap.forEach(c => {
+    const s = c.val();
+    const isToday = s.date === todayStr;
+    const notExpired = s.expiresAt && s.expiresAt > nowMs;
+    const isActive = s.status === 'active';
+    if (s.createdBy === CU.email && isToday && isActive && notExpired) {
+      if (!found || s.startedAt > (found.startedAt||0)) found = { ...s, code: c.key };
+    }
+  });
+  if (found) {
+    activeSess = found;
+    G('t-active').classList.remove('hidden');
+    G('t-new').classList.add('hidden');
+    showActiveSess(found);
+  } else {
+    G('t-active').classList.add('hidden');
+    G('t-new').classList.remove('hidden');
+  }
+}
+
+function renderBatchPicker() {
+  // Chips are pre-rendered in HTML — just update their selected state
+  const wrap = G('b-indiv');
+  if (!wrap) return;
+
+  // Update selected state of pre-rendered chips
+  wrap.querySelectorAll('.bindv').forEach(chip => {
+    const b = chip.textContent.trim();
+    chip.classList.toggle('sel', selBatches.includes(b));
+  });
+
+  // If admin has custom batches in CFG that aren't pre-rendered, add them
+  const customBatches = (CFG && CFG.batches && CFG.batches.length > 0) ? CFG.batches : [];
+  customBatches.forEach(b => {
+    if (!G('batch-' + b)) {
+      // Add chip for custom batch not in default list
+      const chip = document.createElement('div');
+      chip.className = 'bindv' + (selBatches.includes(b) ? ' sel' : '');
+      chip.id = 'batch-' + b;
+      chip.textContent = b;
+      chip.onclick = () => toggleBatch(b);
+      wrap.appendChild(chip);
+    }
+  });
+
+  const cnt = G('sel-batch-count');
+  if (cnt) cnt.textContent = selBatches.length ? '(' + selBatches.length + ' selected)' : '';
+}
+function toggleBatch(b) {
+  selectBatch(b);  // use the global function
+}
+function clearBatches() {
+  selBatches=[];
+  window._selBatches=[];
+  G('b-indiv')?.querySelectorAll('.bindv').forEach(chip=>chip.classList.remove('sel'));
+  const cnt = G('sel-batch-count');
+  if (cnt) cnt.textContent = '';
+  updateStartBtn();
+}
+function renderBatchWrap() {
+  // Update the count label next to Batches label
+  const cnt = G('sel-batch-count');
+  if (cnt) cnt.textContent = selBatches.length ? '(' + selBatches.length + ' selected)' : '';
+  updateStartBtn();
+}
+function toggleBP() { /* deprecated - batch grid is now always visible */ }
+function hideBP()   { /* deprecated */ }
+
+function populateBranchSelect() {
+  const sel = G('ns-br');
+  if (!sel) return;
+  // If admin has configured custom branches, use those; otherwise keep pre-rendered defaults
+  if (CFG && CFG.branches && CFG.branches.length > 0) {
+    sel.innerHTML = '<option value="">— All —</option>' + CFG.branches.map(b=>'<option value="'+escHtml(b)+'">'+escHtml(b)+'</option>').join('');
+  }
+  // else: pre-rendered HTML defaults are already correct — do nothing
+}
+
+function setMode(m) {
+  sessionMode = m;
+  window._sessionMode = m;
+  ['offline','online','bluetooth','wifi'].forEach(x=>G('mode-'+x)?.classList.toggle('sel', x===m));
+  G('gps-fields')?.classList.toggle('hidden', m!=='offline');
+  G('ble-warn')?.classList.toggle('hidden', m!=='bluetooth' || !!navigator.bluetooth);
+  G('wifi-notice')?.classList.toggle('hidden', m!=='wifi');
+  updateStartBtn();
+}
+
+function updateStartBtn() {
+  const btn = G('ns-start');
+  if (!btn) return;
+  // Sync from global in case of timing issues
+  if (window._selBatches && window._selBatches.length) selBatches = window._selBatches;
+  if (window._sessionMode) sessionMode = window._sessionMode;
+  const sub = G('ns-sub')?.value.trim() || '';
+  const hasBatch = selBatches.length > 0;
+  const needsGPS = sessionMode === 'offline';
+  const hasGPS = !!(tLat || window._tLat);
+  btn.disabled = (needsGPS ? !hasGPS : false) || !sub || !hasBatch;
+}
+
+function captureLoc() {
+  G('ns-loc').textContent = 'Getting location...';
+  navigator.geolocation.getCurrentPosition(pos=>{
+    tLat=pos.coords.latitude; tLng=pos.coords.longitude;
+    window._tLat = tLat; window._tLng = tLng;  // sync to global
+    G('ns-loc').textContent = tLat.toFixed(5)+', '+tLng.toFixed(5);
+    updateStartBtn();
+  }, err=>{
+    G('ns-loc').textContent = 'Error: '+(err.code===1?'permission denied':'could not get location');
+  }, {enableHighAccuracy:true, timeout:12000});
+}
+
+function g6() { return String(Math.floor(100000 + Math.random()*900000)); }
+function gCodes(n) {
+  const c={};
+  for (let i=0;i<n;i++) {
+    const k = String(Math.floor(1000+Math.random()*9000));
+    c[k] = { usedCount:0, deleted:false, createdAt:Date.now() };
+  }
+  return c;
+}
+
+async function startSession() {
+  // Sync session mode from global (in case onclick fired before setMode was defined)
+  if (window._sessionMode) sessionMode = window._sessionMode;
+  // Sync selected batches from global
+  if (window._selBatches && window._selBatches.length) selBatches = window._selBatches;
+  const sub = G('ns-sub').value.trim();
+  if (!sub) { SA('ns-alert','am','Enter subject name.'); return; }
+  if (!selBatches.length) { SA('ns-alert','am','Select at least one batch.'); return; }
+  if (sessionMode==='offline' && !tLat) { SA('ns-alert','am','Capture location first.'); return; }
+
+  // Find teacher's sheet ID
+  const sheetId = myTeacherRecord?.sheetId || '';
+
+  const code = g6();
+  const win = parseInt(G('ns-win').value) || 10;
+  const sess = {
+    code, subject: sub,
+    batch: selBatches.join(','), batches: selBatches,
+    branch: G('ns-br').value, semester: G('ns-sem').value,
+    periods: parseInt(G('ns-per').value) || 1,
+    lat: tLat||0, lng: tLng||0,
+    radius: parseInt(G('ns-rad').value) || 50,
+    windowMin: win,
+    expiresAt: Date.now() + win*60000,
+    startedAt: Date.now(), status: 'active',
+    createdBy: CU.email, date: today(),
+    proxyCount: 0, secretCodes: gCodes(10),
+    mode: sessionMode,
+    sheetId: sheetId,
+    teacherName: myTeacherRecord?.name || CU.displayName || '',
+    teacherEmail: CU.email
+  };
+  await db.ref('sessions/'+code).set(sess);
+
+  // Save template
+  const tmpl = { subject:sub, batches:[...selBatches], branch:sess.branch, semester:sess.semester, periods:sess.periods, windowMin:win, radius:sess.radius, mode:sessionMode, lat:tLat, lng:tLng };
+  const tmpls = CFG.classTemplates || [];
+  const existingIdx = tmpls.findIndex(t=>t && t.subject===sub);
+  if (existingIdx>=0) tmpls[existingIdx] = tmpl; else tmpls.push(tmpl);
+  CFG.classTemplates = tmpls;
+  await saveCFG();
+
+  // Start beacon for BLE/Wi-Fi modes
+  if (sessionMode==='bluetooth') await startBLEBeacon(code);
+  if (sessionMode==='wifi')      await startWiFiBeacon(code);
+
+  // Create subject sheet in background
+  if (sheetId) {
+    postToScript({
+      action: 'createSubjectSheet',
+      sheetId, subject: sub, batches: selBatches,
+      branches: sess.branch ? [sess.branch] : [],
+      semester: sess.semester,
+      isLab: sub.toLowerCase().includes('lab'),
+      teacherName: sess.teacherName, teacherEmail: sess.teacherEmail,
+      instName: CFG.instName||'', creatorName: CFG.creatorName||'',
+      supportName: _supportFor().name, supportEmail: _supportFor().email
+    });
+  }
+
+  activeSess = sess;
+  G('t-active').classList.remove('hidden');
+  G('t-new').classList.add('hidden');
+  showActiveSess(sess);
+}
+
+function showActiveSess(sess) {
+  G('t-state-live').classList.remove('hidden');
+  G('t-state-expired').classList.add('hidden');
+  G('t-code').textContent = sess.code;
+  G('t-link').textContent = window.location.origin + window.location.pathname + '?code=' + sess.code;
+
+  const bStr = Array.isArray(sess.batches) ? sess.batches.join(' + ') : sess.batch;
+  const tags = [sess.subject, bStr, sess.branch, sess.semester?'Sem '+sess.semester:''].filter(Boolean);
+  G('t-tags').innerHTML = tags.map(t=>'<span class="stag">'+escHtml(t)+'</span>').join('');
+
+  renderSecretCodes(sess);
+  startActiveTimer(sess.expiresAt);
+  watchLiveAttendance(sess.code);
+
+  // Mode-specific panels
+  G('gps-control').classList.toggle('hidden', sess.mode!=='offline');
+  G('ble-live-panel').classList.toggle('hidden', sess.mode!=='bluetooth');
+  G('wifi-live-panel').classList.toggle('hidden', sess.mode!=='wifi');
+
+  if (sess.mode==='bluetooth') {
+    db.ref('sessions/'+sess.code+'/ble').on('value', snap => {
+      if (!snap.exists()) return;
+      G('live-beacon-name').textContent = snap.val().beaconName||'—';
+    });
+    db.ref('sessions/'+sess.code+'/proxyFlags').on('value', ()=>loadProxyLog(sess.code));
+  } else if (sess.mode==='wifi') {
+    db.ref('sessions/'+sess.code+'/wifi').on('value', snap => {
+      if (!snap.exists()) return;
+      G('live-wifi-beacon').textContent = snap.val().ssid||'—';
+    });
+    db.ref('sessions/'+sess.code+'/proxyFlags').on('value', ()=>loadProxyLog(sess.code));
+  }
+
+  // Count enrolled
+  const batches = Array.isArray(sess.batches)?sess.batches:(sess.batch?sess.batch.split(','):[]);
+  const enrolled = STUDENTS.filter(s => (!batches.length || batches.includes(s.batch)) && (!sess.branch || s.branch===sess.branch)).length;
+  G('live-tot').textContent = enrolled || '—';
+}
+
+function startActiveTimer(expiresAt) {
+  if (timerID) clearInterval(timerID);
+  function tick() {
+    const rem = expiresAt - Date.now();
+    const el = G('t-timer');
+    if (!el) { clearInterval(timerID); return; }
+    if (rem <= 0) {
+      el.textContent = '⏱ Window closed — tap End Session';
+      clearInterval(timerID);
+    } else {
+      const m=Math.floor(rem/60000), s=Math.floor((rem%60000)/1000);
+      el.textContent = '⏱ '+m+':'+String(s).padStart(2,'0')+' remaining';
+    }
+  }
+  tick(); timerID = setInterval(tick, 1000);
+}
+
+function watchLiveAttendance(code) {
+  db.ref('sessions/'+code+'/attendance').on('value', snap => {
+    const rows = snap.exists() ? Object.values(snap.val()) : [];
+    rows.sort((a,b)=>b.time-a.time);
+    const pres = rows.length;
+    const prx = rows.filter(r=>r.isProxy).length;
+    G('live-pres').textContent = pres;
+    G('live-prx').textContent = prx;
+    const list = G('live-list');
+    if (!rows.length) list.innerHTML = '<div class="ph">Waiting for students...</div>';
+    else list.innerHTML = rows.map(r=>'<div class="srow"><div class="sav'+(r.isProxy?' sav-purple':'')+'">'+escHtml((r.name||'?')[0].toUpperCase())+'</div><div class="sinf"><div class="sname">'+escHtml(r.name||'—')+(r.isProxy?' <span class="badge b-pu" style="font-size:9px">PROXY</span>':'')+'</div><div class="sroll">'+escHtml(r.colId||r.enr)+' · '+escHtml(r.batch||'')+' · '+fmtT(r.time)+'</div></div><span class="badge b-gr">P</span></div>').join('');
+  });
+}
+
+async function loadProxyLog(code) {
+  const snap = await db.ref('sessions/'+code+'/proxyFlags').get();
+  if (!snap.exists()) { G('ble-proxy-log').innerHTML=''; return; }
+  const flags = Object.values(snap.val());
+  if (!flags.length) { G('ble-proxy-log').innerHTML=''; return; }
+  G('ble-proxy-log').innerHTML = '<div style="font-weight:700;color:var(--red);margin-top:6px;font-size:11px">⚠️ '+flags.length+' proxy attempt(s)</div>' +
+    flags.slice(-5).map(f=>'<div class="proxy-row">'+escHtml(f.attemptEmail||'?')+' tried, device already used by '+escHtml(f.prevEnr||'?')+' at '+fmtT(f.time)+'</div>').join('');
+}
+
+function renderSecretCodes(sess) {
+  const wrap = G('scodes-wrap');
+  if (!wrap) return;
+  const codes = sess.secretCodes || {};
+  wrap.innerHTML = Object.entries(codes).map(([k,v])=>'<span class="scchip'+(v.deleted?' del':'')+'">'+escHtml(k)+(v.deleted?' <span class="sccnt">used</span>':'')+'</span>').join('');
+}
+
+async function moreCodes() {
+  if (!activeSess) return;
+  const newCodes = gCodes(5);
+  for (const [k,v] of Object.entries(newCodes)) {
+    await db.ref('sessions/'+activeSess.code+'/secretCodes/'+k).set(v);
+  }
+  const snap = await db.ref('sessions/'+activeSess.code+'/secretCodes').get();
+  activeSess.secretCodes = snap.val() || {};
+  renderSecretCodes(activeSess);
+}
+
+function copyLink() {
+  const link = G('t-link').textContent;
+  if (!link || link==='—') return;
+  navigator.clipboard?.writeText(link).then(()=>alert('Link copied!'));
+}
+
+async function updRadius() {
+  if (!activeSess) return;
+  const r = parseInt(G('live-r').value) || 50;
+  await db.ref('sessions/'+activeSess.code+'/radius').set(r);
+  activeSess.radius = r;
+}
+
+async function endSession() {
+  if (!activeSess) return;
+  if (!confirm('End session? All remaining students will be marked A.')) return;
+  await db.ref('sessions/'+activeSess.code+'/status').set('ended');
+  if (activeSess.mode==='bluetooth') stopBLEBeacon(activeSess.code);
+  if (activeSess.mode==='wifi')      stopWiFiBeacon(activeSess.code);
+  db.ref('sessions/'+activeSess.code+'/attendance').off();
+  db.ref('sessions/'+activeSess.code+'/proxyFlags').off();
+  db.ref('sessions/'+activeSess.code+'/ble').off();
+  db.ref('sessions/'+activeSess.code+'/wifi').off();
+  if (timerID) clearInterval(timerID);
+  // Tell Apps Script to mark absent
+  postToScript({
+    action:'endSession', sheetId: activeSess.sheetId||'',
+    subject: activeSess.subject, date: today(), sessionCode: activeSess.code
+  });
+  showExpired(activeSess);
+}
+
+async function showExpired(sess) {
+  G('t-state-live').classList.add('hidden');
+  G('t-state-expired').classList.remove('hidden');
+  G('t-code-exp').textContent = sess.code;
+  G('t-subj-exp').textContent = sess.subject;
+  const bStr = Array.isArray(sess.batches) ? sess.batches.join(' + ') : sess.batch;
+  G('t-tags-exp').innerHTML = [sess.subject, bStr, sess.branch].filter(Boolean).map(t=>'<span class="stag">'+escHtml(t)+'</span>').join('');
+  // Load attendance
+  const snap = await db.ref('sessions/'+sess.code+'/attendance').get();
+  const rows = snap.exists() ? Object.values(snap.val()) : [];
+  rows.sort((a,b)=>b.time-a.time);
+  G('exp-pres').textContent = rows.length;
+  G('exp-prx').textContent = rows.filter(r=>r.isProxy).length;
+  const batches = Array.isArray(sess.batches)?sess.batches:(sess.batch?sess.batch.split(','):[]);
+  const enr = STUDENTS.filter(s => (!batches.length||batches.includes(s.batch)) && (!sess.branch||s.branch===sess.branch)).length;
+  G('exp-tot').textContent = enr || '—';
+  G('exp-live-list').innerHTML = rows.length
+    ? rows.map(r=>'<div class="srow"><div class="sav'+(r.isProxy?' sav-purple':'')+'">'+escHtml((r.name||'?')[0].toUpperCase())+'</div><div class="sinf"><div class="sname">'+escHtml(r.name||'—')+'</div><div class="sroll">'+escHtml(r.colId||r.enr)+' · '+fmtT(r.time)+'</div></div><span class="badge b-gr">P</span></div>').join('')
+    : '<div class="ph">None attended</div>';
+}
+
+function setReopenCodeMode(m) {
+  reopenCodeMode = m;
+  G('reopen-samecode-btn').classList.toggle('sel', m==='same');
+  G('reopen-newcode-btn').classList.toggle('sel', m==='new');
+}
+function setReopenMode(m) {
+  reopenMode = m;
+  G('reopen-verify-btn').classList.toggle('sel', m==='gps');
+  G('reopen-code-btn').classList.toggle('sel', m==='code-only');
+}
+
+async function doReopenActive() {
+  if (!activeSess) return;
+  const mins = parseInt(G('reopen-mins').value) || 5;
+  const newExpiresAt = Date.now() + mins*60000;
+  if (reopenCodeMode==='same') {
+    await db.ref('sessions/'+activeSess.code).update({
+      status:'active', expiresAt:newExpiresAt, reopenMode:reopenMode
+    });
+    activeSess.expiresAt = newExpiresAt;
+    activeSess.status = 'active';
+    activeSess.reopenMode = reopenMode;
+    if (activeSess.mode==='bluetooth') await startBLEBeacon(activeSess.code);
+    if (activeSess.mode==='wifi')      await startWiFiBeacon(activeSess.code);
+    showActiveSess(activeSess);
+  } else {
+    // New code - clone session with new code
+    const newCode = g6();
+    const cloned = {...activeSess, code:newCode, expiresAt:newExpiresAt, status:'active', reopenMode:reopenMode, startedAt:Date.now(), secretCodes:gCodes(10)};
+    delete cloned.attendance; delete cloned.bleLog; delete cloned.proxyFlags;
+    await db.ref('sessions/'+newCode).set(cloned);
+    activeSess = cloned;
+    if (activeSess.mode==='bluetooth') await startBLEBeacon(newCode);
+    if (activeSess.mode==='wifi')      await startWiFiBeacon(newCode);
+    showActiveSess(cloned);
+  }
+}
+
+function showNewSession() {
+  activeSess = null;
+  if (timerID) clearInterval(timerID);
+  G('t-active').classList.add('hidden');
+  G('t-new').classList.remove('hidden');
+  selBatches=[]; tLat=null; tLng=null;
+  G('ns-sub').value=''; G('ns-loc').textContent='Tap below to capture';
+  renderBatchPicker(); renderBatchWrap();
+  setMode('offline');
+}
+
+// ─── BLE BEACON (teacher side, web) ───────────────────────────
+function genBeaconName() {
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s = BLE_PREFIX;
+  for (let i=0;i<8;i++) s += chars[Math.floor(Math.random()*chars.length)];
+  return s;
+}
+function genWiFiCode() {
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s = WIFI_PREFIX;
+  for (let i=0;i<6;i++) s += chars[Math.floor(Math.random()*chars.length)];
+  return s;
+}
+
+async function startBLEBeacon(code) {
+  bleBeaconName = genBeaconName();
+  bleCountdown = 10;
+  await db.ref('sessions/'+code+'/ble').set({ beaconName:bleBeaconName, rotatedAt:Date.now(), active:true });
+  if (G('live-beacon-name')) G('live-beacon-name').textContent = bleBeaconName;
+  if (G('live-beacon-countdown')) G('live-beacon-countdown').textContent = bleCountdown+'s';
+  bleBeaconTimer = setInterval(async ()=>{
+    bleBeaconName = genBeaconName();
+    bleCountdown = 10;
+    await db.ref('sessions/'+code+'/ble').update({ beaconName:bleBeaconName, rotatedAt:Date.now() });
+    if (G('live-beacon-name')) G('live-beacon-name').textContent = bleBeaconName;
+  }, 10000);
+  bleCountdownTimer = setInterval(()=>{
+    bleCountdown = Math.max(0, bleCountdown-1);
+    if (G('live-beacon-countdown')) G('live-beacon-countdown').textContent = bleCountdown+'s';
+  }, 1000);
+}
+
+function stopBLEBeacon(code) {
+  if (bleBeaconTimer) { clearInterval(bleBeaconTimer); bleBeaconTimer=null; }
+  if (bleCountdownTimer) { clearInterval(bleCountdownTimer); bleCountdownTimer=null; }
+  if (code) db.ref('sessions/'+code+'/ble/active').set(false).catch(()=>{});
+}
+
+async function startWiFiBeacon(code) {
+  wifiCode = genWiFiCode();
+  wifiCountdown = 10;
+  await db.ref('sessions/'+code+'/wifi').set({ ssid:wifiCode, rotatedAt:Date.now(), active:true });
+  if (G('live-wifi-beacon')) G('live-wifi-beacon').textContent = wifiCode;
+  if (G('live-wifi-countdown')) G('live-wifi-countdown').textContent = wifiCountdown+'s';
+  wifiBeaconTimer = setInterval(async ()=>{
+    wifiCode = genWiFiCode();
+    wifiCountdown = 10;
+    await db.ref('sessions/'+code+'/wifi').update({ ssid:wifiCode, rotatedAt:Date.now() });
+    if (G('live-wifi-beacon')) G('live-wifi-beacon').textContent = wifiCode;
+  }, 10000);
+  wifiCountdownTimer = setInterval(()=>{
+    wifiCountdown = Math.max(0, wifiCountdown-1);
+    if (G('live-wifi-countdown')) G('live-wifi-countdown').textContent = wifiCountdown+'s';
+  }, 1000);
+}
+
+function stopWiFiBeacon(code) {
+  if (wifiBeaconTimer) { clearInterval(wifiBeaconTimer); wifiBeaconTimer=null; }
+  if (wifiCountdownTimer) { clearInterval(wifiCountdownTimer); wifiCountdownTimer=null; }
+  if (code) db.ref('sessions/'+code+'/wifi/active').set(false).catch(()=>{});
+}
+
+// ─── TEMPLATES + RECENT ───────────────────────────────────────
+async function renderTmpls() {
+  const q = (G('tmpl-search')?.value||'').trim().toLowerCase();
+  // Filter: only valid template objects (not strings/numbers from corrupt data)
+  const list = (CFG.classTemplates||[]).filter(t=>t && typeof t === 'object' && t.subject && typeof t.subject === 'string').filter(t=>!q || t.subject.toLowerCase().includes(q));
+  const el = G('tmpl-list');
+  if (!list.length) { el.innerHTML = '<div class="ph">Start first session — saves automatically</div>'; return; }
+
+  // Load all per-subject visibility settings for this teacher at once
+  const emailKey = CU ? CU.email.toLowerCase().replace(/[.#$\[\]]/g,'_') : '';
+  let allVis = {};
+  if (emailKey) {
+    try {
+      const snap = await db.ref('teacherVis/' + emailKey).get();
+      if (snap.exists()) allVis = snap.val();
+    } catch(e) {}
+  }
+
+  // Build template rows safely using DOM to avoid quote escaping issues
+  el.innerHTML = '';
+  list.forEach((t,i) => {
+    const subjKey = t.subject.replace(/[.#$\[\]]/g,'_');
+    const vis = allVis[subjKey] || {};
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--w);border:1px solid var(--bdr);border-radius:10px;margin-bottom:6px';
+
+    const icon = document.createElement('span');
+    icon.textContent = '📕'; icon.style.fontSize = '16px';
+
+    const info = document.createElement('div');
+    info.style.cssText = 'flex:1;cursor:pointer;min-width:0';
+    info.onclick = () => loadTmpl(i);
+    const title = document.createElement('div');
+    title.style.cssText = 'font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+    title.textContent = t.subject;
+    const meta = document.createElement('div');
+    meta.style.cssText = 'font-size:10px;color:var(--ink3)';
+    meta.textContent = (t.batches||[]).join(', ') + (t.branch ? ' · '+t.branch : '');
+    info.appendChild(title); info.appendChild(meta);
+
+    const lbl = document.createElement('label');
+    lbl.className = 'toggle'; lbl.style.flexShrink = '0'; lbl.title = 'Show marks to students';
+    const chk = document.createElement('input');
+    chk.type = 'checkbox'; chk.checked = !!vis.showMarks;
+    chk.onchange = () => saveSubjectVisibility(i, t.subject);
+    const slider = document.createElement('span');
+    slider.className = 'toggle-slider';
+    lbl.appendChild(chk); lbl.appendChild(slider);
+
+    const del = document.createElement('button');
+    del.textContent = '✕';
+    del.style.cssText = 'background:none;border:none;color:var(--ink3);font-size:16px;cursor:pointer;padding:2px 6px;flex-shrink:0';
+    del.onclick = (e) => { e.stopPropagation(); delTmpl(i); };
+
+    row.appendChild(icon); row.appendChild(info); row.appendChild(lbl); row.appendChild(del);
+    el.appendChild(row);
+  });
+}
+
+function loadTmpl(i) {
+  const t = (CFG.classTemplates||[])[i];
+  if (!t) return;
+  G('ns-sub').value = t.subject;
+  selBatches = [...(t.batches||[])];
+  // Update pre-rendered chip states
+  G('b-indiv')?.querySelectorAll('.bindv').forEach(chip=>{
+    chip.classList.toggle('sel', selBatches.includes(chip.textContent.trim()));
+  });
+  G('ns-br').value = t.branch||'';
+  G('ns-sem').value = t.semester||'';
+  G('ns-per').value = t.periods||1;
+  G('ns-win').value = t.windowMin||10;
+  G('ns-rad').value = t.radius||50;
+  if (t.lat && t.lng) { tLat=t.lat; tLng=t.lng; G('ns-loc').textContent = tLat.toFixed(5)+', '+tLng.toFixed(5); }
+  setMode(t.mode||'offline');
+  renderBatchPicker(); renderBatchWrap();
+}
+
+async function delTmpl(i) {
+  if (!confirm('Delete this saved class?')) return;
+  (CFG.classTemplates||[]).splice(i,1);
+  await saveCFG();
+  renderTmpls();
+}
+
+async function renderRecentSessions() {
+  const snap = await db.ref('sessions').limitToLast(20).get();
+  if (!snap.exists()) { G('recent-sessions-list').innerHTML = '<div class="ph">No past sessions</div>'; return; }
+  const my = [];
+  snap.forEach(c => {
+    const s = c.val();
+    if (s.createdBy === CU.email && s.status === 'ended') my.push({ ...s, code: c.key });
+  });
+  my.sort((a,b)=>b.startedAt-a.startedAt);
+  G('recent-sessions-list').innerHTML = my.length
+    ? my.slice(0,10).map(s=>'<div class="srow"><span style="font-size:18px">📗</span><div class="sinf"><div class="sname">'+escHtml(s.subject)+'</div><div class="sroll">'+fmtD(s.startedAt)+' · '+(Array.isArray(s.batches)?s.batches.join(','):s.batch||'')+'</div></div><span class="badge b-gr">'+(s.attendance?Object.keys(s.attendance).length:0)+' present</span></div>').join('')
+    : '<div class="ph">None yet</div>';
+}
+
+
+// ─── RECORDS TAB ──────────────────────────────────────────────
+let _recsSubjectMap = {};
+
+async function loadRecs() {
+  G('recs-content').innerHTML = '<div class="spin"></div>';
+  await loadStuCache();
+  const snap = await db.ref('sessions').get();
+  if (!snap.exists()) { G('recs-content').innerHTML = '<div class="card ph">No sessions yet</div>'; return; }
+
+  // TEACHER: only their own sessions
+  // ADMIN/SUPERADMIN: all sessions from all teachers
+  const subjects = new Set(), batches = new Set(), branches = new Set();
+  const mySessions = [];
+  snap.forEach(c => {
+    const s = c.val();
+    if (!s.subject) return;
+    const visible = (isAdmin || isSuperAdmin) ? true : s.createdBy === CU.email;
+    if (!visible) return;
+    mySessions.push({ ...s, code: c.key });
+    subjects.add(s.subject + ((!isAdmin && !isSuperAdmin) ? '' : ' (' + (s.createdBy||'').split('@')[0] + ')'));
+    if (s.batch) s.batch.split(',').forEach(b=>batches.add(b.trim()));
+    if (s.branch) branches.add(s.branch);
+  });
+  // Update default option label based on role
+  const defOpt = G('rec-class-default');
+  if (defOpt) defOpt.textContent = (isAdmin || isSuperAdmin) ? 'All teachers — all classes' : 'All my classes';
+
+  const fill = (id, set, allLabel) => {
+    const sel = G(id); if (!sel) return;
+    const cur = sel.value;
+    const first = id === 'rec-class'
+      ? '<option value="" id="rec-class-default">' + ((isAdmin||isSuperAdmin)?'All teachers — all classes':'All my classes') + '</option>'
+      : '<option value="">All</option>';
+    sel.innerHTML = first + [...set].sort().map(v=>'<option value="'+escHtml(v)+'">'+escHtml(v)+'</option>').join('');
+    sel.value = cur;
+  };
+  fill('rec-class', subjects); fill('rec-batch', batches); fill('rec-branch', branches);
+
+  const fSubj = G('rec-class').value, fBatch = G('rec-batch').value, fBranch = G('rec-branch').value, fSem = G('rec-sem').value;
+
+  // Aggregate per student
+  const students = {}; // key -> {name, enr, colId, batch, branch, attended, total}
+  mySessions.forEach(s => {
+    if (s.status !== 'ended') return;
+    if (fSubj && s.subject !== fSubj) return;
+    const sb = Array.isArray(s.batches) ? s.batches : (s.batch?s.batch.split(','):[]);
+    if (fBatch && !sb.includes(fBatch)) return;
+    if (fBranch && s.branch !== fBranch) return;
+    if (fSem && s.semester !== fSem) return;
+    const p = s.periods || 1;
+    // For each student enrolled in this session batch
+    const enrolled = STUDENTS.filter(st => (!sb.length || sb.includes(st.batch)) && (!s.branch || st.branch===s.branch) && (!s.semester || st.semester===s.semester));
+    enrolled.forEach(st => {
+      const key = (st.colId||st.enr);
+      if (!students[key]) students[key] = {...st, attended:0, total:0};
+      students[key].total += p;
+      const aKey = (st.colId||st.enr).replace(/[^\w]/g,'_');
+      if (s.attendance && s.attendance[aKey]) students[key].attended += p;
+    });
+  });
+
+  const arr = Object.values(students);
+  if (!arr.length) { G('recs-content').innerHTML = '<div class="card ph">No records match filters</div>'; return; }
+  arr.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+
+  const th = parseInt(G('thresh-v').value) || CFG.threshold || 75;
+  const rows = arr.map(s => {
+    const pct = s.total>0 ? Math.round(s.attended/s.total*100) : 0;
+    const pc = pct>=th ? 'pg' : pct>=(th-10) ? 'pa' : 'pr';
+    const badge = pct>=th ? 'b-gr' : pct>=(th-10) ? 'b-am' : 'b-rd';
+    return '<div class="srow"><div class="sav">'+escHtml((s.name||'?')[0].toUpperCase())+'</div><div class="sinf"><div class="sname">'+escHtml(s.name)+'</div><div class="sroll">'+escHtml(s.colId||s.enr)+' · '+escHtml(s.batch||'')+' · '+escHtml(s.branch||'')+'</div><div class="pbar" style="margin-top:4px"><div class="pbf '+pc+'" style="width:'+pct+'%"></div></div></div><span class="badge '+badge+'" style="font-size:11px">'+s.attended+'/'+s.total+' · '+pct+'%</span></div>';
+  }).join('');
+  G('recs-content').innerHTML = '<div class="card"><div class="ct">Students ('+arr.length+')</div>'+rows+'</div>';
+
+  _recsSubjectMap = { arr, th };
+}
+
+function expAll() {
+  const m = _recsSubjectMap;
+  if (!m || !m.arr) { alert('Load records first'); return; }
+  _downloadCSV(m.arr, 'attendance_all.csv');
+}
+function expBelow() {
+  const m = _recsSubjectMap;
+  if (!m || !m.arr) { alert('Load records first'); return; }
+  const th = parseInt(G('thresh-v').value) || CFG.threshold || 75;
+  const filtered = m.arr.filter(s => { const pct = s.total>0?Math.round(s.attended/s.total*100):0; return pct < th; });
+  _downloadCSV(filtered, 'attendance_below_'+th+'.csv');
+}
+function _downloadCSV(arr, filename) {
+  let csv = 'S.No,College ID,Enr. Number,Name,Father,Batch,Branch,Semester,Attended,Total,Percentage\n';
+  arr.forEach((s,i) => {
+    const pct = s.total>0 ? Math.round(s.attended/s.total*100) : 0;
+    csv += (i+1)+',"'+(s.colId||'')+'","'+(s.enr||'')+'","'+(s.name||'')+'","'+(s.father||'')+'","'+(s.batch||'')+'","'+(s.branch||'')+'","'+(s.semester||'')+'",'+s.attended+','+s.total+','+pct+'%\n';
+  });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+}
+
+// ─── STUDENTS PANEL ───────────────────────────────────────────
+async function loadStuPanel() {
+  await loadStuCache();
+  if (isAdmin || isSuperAdmin) {
+    G('stu-cnt').textContent = STUDENTS.length + ' students';
+  }
+  // Visibility is now loaded in initTeacher() per teacher
+}
+
+async function refreshStudents() {
+  const btn = G('stu-refresh-btn');
+  btn.disabled = true; btn.textContent = '↺ Refreshing...';
+  HA('stu-refresh-alert');
+  if (!CFG.sheetUrl) {
+    SA('stu-refresh-alert','am','Contact administrator — database URL not set.');
+    btn.disabled = false; btn.textContent = '↺ Refresh Student Data'; return;
+  }
+  try {
+    const res = await fetch(CFG.sheetUrl + '&cachebust=' + Date.now());
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const text = await res.text();
+    if (text && text.includes(',')) {
+      parseStu(text);
+      SA('stu-refresh-alert','gr','Refresh successful! '+STUDENTS.length+' students loaded.');
+      G('stu-sync-status').textContent = 'Last synced: ' + fmtT(Date.now());
+      if (isAdmin || isSuperAdmin) G('stu-cnt').textContent = STUDENTS.length + ' students';
+    } else throw new Error('Empty CSV');
+  } catch(e) {
+    SA('stu-refresh-alert','rd','Contact your administrator — database issue.');
+  }
+  btn.disabled = false; btn.textContent = '↺ Refresh Student Data';
+}
+
+async function saveVisibility() {
+  // Legacy stub — no longer used. Per-class saving is done by saveSubjectVisibility().
+}
+
+async function saveSubjectVisibility(tmplIndex, subject) {
+  if (!CU) return;
+  const emailKey = CU.email.toLowerCase().replace(/[.#$\[\]]/g, '_');
+  const subjKey  = subject.replace(/[.#$\[\]]/g, '_');
+  const i = tmplIndex;
+  const vis = {
+    showDateTable:  !!(G('vis-date-table-'+i)   && G('vis-date-table-'+i).checked),
+    showClassCount: !!(G('vis-class-count-'+i) && G('vis-class-count-'+i).checked),
+    showMarks:      !!(G('vis-marks-'+i)         && G('vis-marks-'+i).checked)
+  };
+  try {
+    await db.ref('teacherVis/' + emailKey + '/' + subjKey).set(vis);
+    // Visual confirmation — flash the details summary green briefly
+    const details = document.querySelectorAll('#tmpl-list details');
+    if (details[i]) {
+      const s = details[i].querySelector('summary');
+      if (s) { const orig = s.style.color; s.style.color='var(--green)'; setTimeout(()=>s.style.color=orig, 800); }
+    }
+  } catch(e) { console.error('saveSubjectVisibility error:', e); }
+}
+
+// ─── SETTINGS TAB ─────────────────────────────────────────────
+function loadSettings() {
+  G('inst-name').value    = CFG.instName    || '';
+  G('inst-sub').value     = CFG.instSub     || '';
+  G('creator-name').value = CFG.creatorName || '';
+  if (CFG.instLogo) {
+    G('logo-preview').src = CFG.instLogo;
+    G('logo-preview').style.display = 'block';
+    G('logo-placeholder').style.display = 'none';
+  }
+  G('att-script-url').value    = CFG.attendanceUrl || '';
+  G('sheet-url-settings').value = CFG.sheetUrl     || '';
+  G('apk-url').value       = CFG.apkUrl     || '';
+  G('ios-url').value       = CFG.iosUrl     || '';
+  G('app-version').value   = CFG.appVersion || APP_VERSION;
+  G('support-use-super').checked = CFG.supportUseSuper !== false;
+  G('support-name').value  = CFG.supportName  || '';
+  G('support-email').value = CFG.supportEmail || '';
+  toggleSupportMode();
+  G('thresh-v-settings').value = CFG.threshold || 75;
+  renderAdminEmails();
+  renderTeacherList();
+  renderBatchBranchLists();
+  updateTeacherCountBadge();
+}
+
+function toggleSupportMode() {
+  const useSup = G('support-use-super').checked;
+  G('support-manual-fields').style.opacity = useSup ? '.4' : '1';
+  G('support-name').disabled  = useSup;
+  G('support-email').disabled = useSup;
+}
+
+async function saveBranding() {
+  CFG.instName    = G('inst-name').value.trim();
+  CFG.instSub     = G('inst-sub').value.trim();
+  CFG.creatorName = G('creator-name').value.trim();
+  await saveCFG();
+  applyBranding();
+  SA('brand-alert','gr','Saved. Updating teacher sheets...');
+  if (CFG.attendanceUrl) {
+    postToScript({ action:'updateBranding', instName:CFG.instName, creatorName:CFG.creatorName });
+  }
+  setTimeout(()=>SA('brand-alert','gr','Branding saved and all sheets updated.'), 1500);
+}
+
+function handleLogoUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 100*1024) { SA('brand-alert','am','Logo too large. Max 80KB recommended.'); return; }
+  const reader = new FileReader();
+  reader.onload = async evt => {
+    CFG.instLogo = evt.target.result;
+    await saveCFG();
+    G('logo-preview').src = CFG.instLogo;
+    G('logo-preview').style.display = 'block';
+    G('logo-placeholder').style.display = 'none';
+    applyBranding();
+    SA('brand-alert','gr','Logo saved.');
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveAttScriptUrl() {
+  const url = G('att-script-url').value.trim();
+  if (!url) { SA('att-script-alert','am','Paste URL first.'); return; }
+  SA('att-script-alert','bl','Testing...');
+  try {
+    const res = await fetch(url + '?action=ping');
+    const txt = await res.text();
+    if (txt.includes('OK')) {
+      CFG.attendanceUrl = url;
+      await saveCFG();
+      SA('att-script-alert','gr','✅ Connected! Script is responding.');
+    } else {
+      SA('att-script-alert','rd','Script returned unexpected response: '+txt.slice(0,80));
+    }
+  } catch(e) {
+    SA('att-script-alert','rd','Connection failed: '+e.message);
+  }
+}
+
+async function saveUrls() {
+  CFG.sheetUrl = G('sheet-url-settings').value.trim();
+  await saveCFG();
+  SA('out-alert','gr','Saved.');
+}
+
+async function saveAppLinks() {
+  CFG.apkUrl = G('apk-url').value.trim();
+  CFG.iosUrl = G('ios-url').value.trim();
+  CFG.appVersion = G('app-version').value.trim() || APP_VERSION;
+  await saveCFG();
+  alert('App links saved.');
+}
+
+async function saveSupport() {
+  CFG.supportUseSuper = G('support-use-super').checked;
+  if (!CFG.supportUseSuper) {
+    CFG.supportName  = G('support-name').value.trim();
+    CFG.supportEmail = G('support-email').value.trim();
+  }
+  await saveCFG();
+  SA('support-alert','gr','Saved. Updating all teacher sheets...');
+  if (CFG.attendanceUrl) {
+    const sup = _supportFor();
+    postToScript({ action:'updateSupportBar', supportName:sup.name, supportEmail:sup.email });
+  }
+  setTimeout(()=>SA('support-alert','gr','Support contact saved and all sheets updated.'), 1500);
+}
+
+async function saveThreshSettings() {
+  const v = parseInt(G('thresh-v-settings').value) || 75;
+  CFG.threshold = Math.max(0, Math.min(100, v));
+  await saveCFG();
+  SA('thresh-settings-alert','gr','Threshold saved: '+CFG.threshold+'%');
+}
+
+function renderAdminEmails() {
+  const list = CFG.adminEmails || [];
+  G('admin-email-list').innerHTML = list.length
+    ? list.map((e,i)=>'<div class="teacher-row"><div class="teacher-row-info"><div class="teacher-row-meta">'+escHtml(e)+'</div></div><button class="btn bo bsm" onclick="delAdmin('+i+')">✕</button></div>').join('')
+    : '<div class="ph">No co-admins yet</div>';
+}
+
+async function addAdmin() {
+  const em = G('new-admin-email').value.trim().toLowerCase();
+  if (!em || !em.includes('@')) { alert('Enter valid email'); return; }
+  CFG.adminEmails = [...(CFG.adminEmails||[])];
+  if (!CFG.adminEmails.includes(em)) CFG.adminEmails.push(em);
+  await saveCFG();
+  G('new-admin-email').value='';
+  renderAdminEmails();
+}
+
+async function delAdmin(i) {
+  if (!confirm('Remove this admin?')) return;
+  CFG.adminEmails.splice(i,1);
+  await saveCFG();
+  renderAdminEmails();
+}
+
+function renderTeacherList() {
+  const list = CFG.teachers || [];
+  updateTeacherCountBadge();
+  G('t-email-list').innerHTML = list.length
+    ? list.map((t,i)=>t?('<div class="teacher-row"><div class="teacher-row-info"><div class="teacher-row-name">'+escHtml(t.name||'—')+' <span class="badge b-bl" style="font-size:10px">'+escHtml(t.abbr||'')+'</span></div><div class="teacher-row-meta">'+escHtml(t.email||'')+' · '+escHtml(t.branch||'')+(t.sheetId?' · ✅ sheet ready':' · ⏳ no sheet')+'</div></div><button class="btn bo bsm" onclick="delTeacher('+i+')">✕</button></div>'):'').join('')
+    : '<div class="ph">No teachers added yet</div>';
+}
+
+function updateTeacherCountBadge() {
+  G('teacher-count-badge').textContent = (CFG.teachers||[]).filter(t=>t).length;
+}
+
+async function addTeachersBulk() {
+  const text = G('teachers-bulk').value.trim();
+  if (!text) { SA('teacher-add-alert','am','Paste teachers first.'); return; }
+  if (!CFG.attendanceUrl) { SA('teacher-add-alert','rd','Apps Script URL must be set first (System URLs above).'); return; }
+
+  const lines = text.split('\n').map(l=>l.trim()).filter(Boolean);
+  const parsed = [];
+  const errors = [];
+  lines.forEach((line, idx) => {
+    const parts = line.split('|').map(p=>p.trim());
+    if (parts.length < 4) { errors.push('Line '+(idx+1)+': needs 4 fields'); return; }
+    const [name, email, branch, abbr] = parts;
+    if (!name || !email.includes('@') || !branch || !abbr) { errors.push('Line '+(idx+1)+': invalid fields'); return; }
+    parsed.push({ name, email: email.toLowerCase(), branch, abbr: abbr.toUpperCase() });
+  });
+  if (errors.length) { SA('teacher-add-alert','am','Errors:\n'+errors.join('\n')); return; }
+  if (!parsed.length) { SA('teacher-add-alert','am','No valid teachers found.'); return; }
+
+  SA('teacher-add-alert','bl','Creating sheets for '+parsed.length+' teacher(s)... Please wait.');
+
+  const existing = CFG.teachers || [];
+  const sup = _supportFor();
+
+  for (const t of parsed) {
+    // Skip if already exists
+    if (existing.find(e => e && e.email===t.email)) continue;
+
+    try {
+      const res = await fetch(CFG.attendanceUrl, {
+        method: 'POST',
+        headers: {'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify({
+          action: 'createTeacherSheet',
+          teacherName: t.name, teacherEmail: t.email,
+          branch: t.branch, abbr: t.abbr,
+          instName: CFG.instName||'', creatorName: CFG.creatorName||'',
+          supportName: sup.name, supportEmail: sup.email
+        })
+      });
+      const data = await res.json();
+      if (data.status==='ok') {
+        existing.push({ ...t, sheetId: data.sheetId, sheetUrl: data.sheetUrl, createdAt: Date.now() });
+      } else {
+        errors.push(t.name + ': ' + data.message);
+        existing.push({ ...t, sheetId: '', createdAt: Date.now() });
+      }
+    } catch(e) {
+      errors.push(t.name + ': network error');
+      existing.push({ ...t, sheetId: '', createdAt: Date.now() });
+    }
+  }
+
+  CFG.teachers = existing;
+  // Also keep flat teacherEmails for backward compatibility
+  CFG.teacherEmails = existing.filter(t=>t).map(t=>t.email);
+  await saveCFG();
+  G('teachers-bulk').value = '';
+  renderTeacherList();
+
+  if (errors.length) {
+    SA('teacher-add-alert','am','Added with some errors:\n'+errors.join('\n'));
+  } else {
+    SA('teacher-add-alert','gr','✅ All '+parsed.length+' teacher(s) added. Sheets created in your Drive.');
+  }
+}
+
+async function delTeacher(i) {
+  const t = CFG.teachers[i];
+  if (!t) return;
+  if (!confirm('Remove teacher '+t.name+'?\n\nTheir sheet stays in your Drive, but their access will be revoked.')) return;
+  // Revoke access
+  if (CFG.attendanceUrl && t.sheetId && t.email) {
+    try {
+      await fetch(CFG.attendanceUrl, {
+        method: 'POST',
+        headers: {'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify({ action:'removeTeacherAccess', sheetId:t.sheetId, teacherEmail:t.email })
+      });
+    } catch(e) {}
+  }
+  CFG.teachers.splice(i,1);
+  CFG.teacherEmails = (CFG.teachers||[]).filter(t=>t).map(t=>t.email);
+  await saveCFG();
+  renderTeacherList();
+}
+
+function renderBatchBranchLists() {
+  G('b-list-d').innerHTML = (CFG.batches||[]).map((b,i)=>'<span class="badge b-bl" style="padding:3px 8px;cursor:pointer" onclick="delBatch('+i+')">'+escHtml(b)+' ✕</span>').join('');
+  G('br-list-d').innerHTML = (CFG.branches||[]).map((b,i)=>'<span class="badge b-am" style="padding:3px 8px;cursor:pointer" onclick="delBranch('+i+')">'+escHtml(b)+' ✕</span>').join('');
+}
+
+async function addBatch() {
+  const v = G('new-batch').value.trim().toUpperCase();
+  if (!v) return;
+  if (!CFG.batches.includes(v)) CFG.batches.push(v);
+  await saveCFG();
+  G('new-batch').value = '';
+  renderBatchBranchLists();
+  renderBatchPicker();  // refresh session tab batch picker immediately
+}
+async function delBatch(i) {
+  if (!confirm('Remove this batch?')) return;
+  CFG.batches.splice(i,1);
+  await saveCFG();
+  renderBatchBranchLists();
+  renderBatchPicker();  // refresh session tab batch picker
+}
+async function addBranch() {
+  const v = G('new-branch').value.trim().toUpperCase();
+  if (!v) return;
+  if (!CFG.branches.includes(v)) CFG.branches.push(v);
+  await saveCFG();
+  G('new-branch').value = '';
+  renderBatchBranchLists();
+  populateBranchSelect();  // refresh session tab branch dropdown
+}
+async function delBranch(i) {
+  if (!confirm('Remove this branch?')) return;
+  CFG.branches.splice(i,1);
+  await saveCFG();
+  renderBatchBranchLists();
+  populateBranchSelect();  // refresh session tab branch dropdown
+}
+
+// ─── GO ───────────────────────────────────────────────────────
+// ── BATCH CHIP DELEGATION (document level - most reliable) ──────────────────
+document.addEventListener('click', function(e) {
+  const chip = e.target.closest('[data-batch]');
+  if (!chip) return;
+  const b = chip.getAttribute('data-batch');
+  if (!b) return;
+  // Toggle selection
+  const i = selBatches.indexOf(b);
+  if (i >= 0) selBatches.splice(i, 1); else selBatches.push(b);
+  window._selBatches = selBatches.slice();
+  // Update visual
+  chip.classList.toggle('sel', selBatches.includes(b));
+  // Update counter
+  const cnt = G('sel-batch-count');
+  if (cnt) cnt.textContent = selBatches.length ? '(' + selBatches.length + ' selected)' : '';
+  // Enable/disable start button
+  const btn = G('ns-start');
+  if (btn) {
+    const sub = (G('ns-sub') || {value:''}).value || '';
+    btn.disabled = !sub.trim() || !selBatches.length;
+  }
+});
+// ─────────────────────────────────────────────────────────────────────────────
+
+init();
+
+</script>
+</body>
+</html>
